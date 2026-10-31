@@ -8,6 +8,10 @@
 //   difficulty  … 遊ぶ難易度(なければ、それより下でいちばん難しいもの)
 //   audioBitrate… 音の質(80k なら 1 曲 1.5MB ほど)
 //
+// ダブルセイバー(ダース・モール)用の譜面: BeatSaver には専用の種類がなく、作者が難易度の名前に
+// 「MAUL SPIN」「Darth Maul」「DoubleSaber」「Two Hand DM」などと書いて区別している。
+// ふつうの譜面にはこれを選ばず、ある曲では slots/NNN/maul.json として別に置く(音は chart.json と同じ audio.mp4)
+//
 // 同じ曲は、前回と同じスロットに置く(遊んでいる途中の人の曲が入れ替わらないように)。
 // 前回と同じ曲・同じ版は、前回のファイルを取り直して使い、新しい曲だけ BeatSaver から取ってきて変える
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync, copyFileSync, unlinkSync } from 'node:fs';
@@ -45,17 +49,29 @@ async function getJson(url) {
   throw new Error(`${url}: ${last}`);
 }
 
-function pickDiff(diffs, want) {
-  const std = (diffs ?? []).filter((d) => d.characteristic === 'Standard');
-  if (!std.length) return null;
-  const names = std.map((d) => d.difficulty);
+const isMaul = (d) => /maul|darth|double ?saber|(^|[^a-z])dm([^a-z]|$)/i.test(d.label ?? '');
+
+// 難易度を選ぶ: want があればそれ、なければそれより下でいちばん難しいもの
+function pickByDifficulty(cands, want) {
+  if (!cands.length) return null;
+  const names = cands.map((d) => d.difficulty);
   let pick = names.includes(want) ? want : null;
   if (!pick) {
     const wi = DiffOrder.indexOf(want);
     pick = names.filter((d) => DiffOrder.indexOf(d) <= wi).sort((x, y) => DiffOrder.indexOf(y) - DiffOrder.indexOf(x))[0]
       ?? names.sort((x, y) => DiffOrder.indexOf(x) - DiffOrder.indexOf(y))[0];
   }
-  return std.find((d) => d.difficulty === pick);
+  return cands.find((d) => d.difficulty === pick);
+}
+
+// ふつうの譜面(Standard で、ダブルセイバー用でないもの)
+const pickDiff = (diffs, want) => pickByDifficulty((diffs ?? []).filter((d) => d.characteristic === 'Standard' && !isMaul(d)), want);
+
+// ダブルセイバー用の譜面(なければ null)。Standard を優先し、なければ NoArrows など、ほかの種類から選ぶ
+function pickMaul(diffs, want) {
+  const all = (diffs ?? []).filter(isMaul);
+  const std = all.filter((d) => d.characteristic === 'Standard');
+  return pickByDifficulty(std.length ? std : all.filter((d) => d.characteristic === (all[0]?.characteristic)), want);
 }
 
 // 入れる曲を決める: プレイリストの曲 → 評価の高い順(同じ曲は 1 回だけ)
@@ -85,7 +101,7 @@ async function collectMaps() {
   // プレイリストのあとに、評価の高い順で topRated 曲を足す。
   // 置き場に入りきらないときは、プレイリストの曲は残し、評価順の曲のほうを減らして帳尻を合わせる
   // (1 曲 = 譜面と曲の 2 ファイル。ほかに 一覧・まとめ画像・同期テストの分を残しておく)
-  const fileRoom = Math.floor(((cfg.maxFiles ?? 19000) - 40) / 2);
+  const fileRoom = Math.floor(((cfg.maxFiles ?? 19000) - 40) / 2);   // ダブルセイバー用の譜面(数十〜数百)は、maxFiles と Cloudflare の上限 20000 のすき間に入る
   const goal = Math.min(cfg.maxSongs, fileRoom, maps.length + (cfg.topRated ?? 0));
   if (maps.length + (cfg.topRated ?? 0) > goal) log(`置き場に入りきらないので、評価順の曲を ${maps.length + (cfg.topRated ?? 0) - goal} 曲減らします`);
   for (let page = 0; maps.length < goal && page < 200; page++) {
@@ -124,14 +140,15 @@ async function main() {
   const slots = [JSON.parse(readFileSync(join(out, 'catalog.json'), 'utf8')).slots.find((s) => s.slot === 0)];
   slots[0].title = '同期テスト クリック';
 
-  let reused = 0, made = 0, failed = 0, later = 0;
+  let reused = 0, made = 0, failed = 0, later = 0, maulCount = 0;
   const started = Date.now();
   const budgetMs = (cfg.maxMinutes ?? 300) * 60000;   // GitHub Actions は 1 回 6 時間まで。新しい曲を変えるのは、この時間まで(残りは次の回)
   for (const p of plan) {
     const m = p.m;
     const ver = (m.versions ?? []).find((v) => v.state === 'Published') ?? m.versions?.[0];
     const d = ver ? pickDiff(ver.diffs, cfg.difficulty) : null;
-    if (!ver || !d) { failed++; continue; }
+    if (!ver || !d) { failed++; if (ver && pickMaul(ver.diffs, cfg.difficulty)) log(`  とばしました(ダブルセイバー用の譜面しかない): ${m.name}(BeatSaver ${m.id})`); continue; }
+    const mDiff = pickMaul(ver.diffs, cfg.difficulty);
     const dir = slotDir(p.slot);
     mkdirSync(dir, { recursive: true });
     const md = m.metadata ?? {};
@@ -140,6 +157,7 @@ async function main() {
       characteristic: 'Standard', difficulty: d.difficulty, songId: `bsr:${m.id}`, mapHash: ver.hash, chartKey: `bsr:${m.id}|${ver.hash}|Standard|${d.difficulty}`,
       noteCount: d.notes ?? 0, bpm: md.bpm ?? 0, length: md.duration ?? 0, genre: genreFromTags(m.tags), cover: false, rights: `BeatSaver ${m.id}(${m.uploader?.name ?? ''} さん)`,
     };
+    if (mDiff) entry.maul = { characteristic: mDiff.characteristic, difficulty: mDiff.difficulty, label: mDiff.label ?? '', noteCount: mDiff.notes ?? 0 };
     // 前回と同じ版・同じ難易度なら、前回のファイルを取り直す
     let ok = false;
     if (p.prev && p.prev.mapHash === ver.hash && p.prev.difficulty === d.difficulty) {
@@ -163,6 +181,22 @@ async function main() {
       const r = await fetch(ver.coverURL, UA);
       if (r.ok) writeFileSync(join(dir, 'cover.jpg'), Buffer.from(await r.arrayBuffer()));
     } catch {}
+    // ダブルセイバー用の譜面: 前回と同じものなら取り直し、なければ譜面だけ変える(音は作らないので速い)
+    if (entry.maul) {
+      let mok = false;
+      const pm = p.prev?.maul;
+      if (pm && p.prev.mapHash === ver.hash && pm.characteristic === mDiff.characteristic && pm.difficulty === mDiff.difficulty) {
+        try {
+          const r = await fetch(`${siteUrl}slots/${String(p.slot).padStart(3, '0')}/maul.json`, UA);
+          if (r.ok) { writeFileSync(join(dir, 'maul.json'), Buffer.from(await r.arrayBuffer())); mok = true; }
+        } catch {}
+      }
+      if (!mok) {
+        const r = spawnSync(process.execPath, [join(import.meta.dirname, 'convert.mjs'), '--bsr', m.id, '--slot', String(p.slot), '--char', mDiff.characteristic, '--diff', mDiff.difficulty, '--chart-name', 'maul.json', '--chart-only', '--out', out, '--rights', entry.rights], { stdio: 'ignore' });
+        mok = r.status === 0 && existsSync(join(dir, 'maul.json'));
+      }
+      if (mok) maulCount++; else delete entry.maul;
+    }
     slots.push(entry);
     if ((reused + made) % 50 === 0) log(`  ${reused + made} 曲(使い回し ${reused} / 新しく ${made})`);
   }
@@ -174,7 +208,7 @@ async function main() {
   for (const s of slots) for (const f of ['cover.jpg', 'cover.png']) { const p = join(slotDir(s.slot), f); if (existsSync(p)) unlinkSync(p); }
   writeFileSync(join(out, 'catalog.json'), JSON.stringify(cat));
   writeFileSync(join(out, '_headers'), '/*\n  Access-Control-Allow-Origin: *\n  Cache-Control: public, max-age=300\n');
-  log(`できました: ${slots.length - 1} 曲(使い回し ${reused} / 新しく ${made} / とばした ${failed} / 次の回へ ${later})`);
+  log(`できました: ${slots.length - 1} 曲(使い回し ${reused} / 新しく ${made} / とばした ${failed} / 次の回へ ${later})。ダブルセイバー用の譜面がある曲: ${maulCount} 曲`);
 }
 
 main().catch((e) => { console.error(`エラー: ${e.message}`); process.exit(1); });

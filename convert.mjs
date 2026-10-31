@@ -11,6 +11,8 @@
 //   node convert.mjs --bsr 3ce39 --slot 3 --diff Expert --genre vocaloid   … ジャンル(選曲パネルの左の列)を付ける
 //   node convert.mjs --bsr abcd --slot 2 --diff Hard      … BeatSaver から ZIP を取得して変換
 //   node convert.mjs 譜面.zip --list                      … 収録されている難易度を表示
+//   node convert.mjs --bsr abcd --slot 2 --char NoArrows --diff Expert --chart-name maul.json --chart-only
+//                                                          … 譜面だけを別の名前で書き出す(音・ジャケット・一覧は作らない。ダブルセイバー用の譜面など)
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, relative, resolve } from 'node:path';
@@ -131,7 +133,11 @@ async function main() {
   chart.rights = a.rights || '';
   if (beatsaver) chart.beatsaver = beatsaver;
   const { _source, ...publicChart } = chart;
-  writeFileSync(join(slotDir, 'chart.json'), JSON.stringify(publicChart));
+  writeFileSync(join(slotDir, a['chart-name'] || 'chart.json'), JSON.stringify(publicChart));
+  if (a['chart-only']) {
+    console.log(`スロット ${slotName}: ${a['chart-name'] || 'chart.json'} [${chart.characteristic}/${chart.difficulty}] ノーツ ${chart.counts.notes}`);
+    return;
+  }
 
   // 音源
   const info = readInfo(files);
