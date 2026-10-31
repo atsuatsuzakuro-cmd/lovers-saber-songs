@@ -1,0 +1,14 @@
+{
+  "siteUrl": "https://lovers-saber.pages.dev/",
+  "projectName": "lovers-saber",
+  "priorityIdFiles": [
+    "udon-ids.json"
+  ],
+  "playlists": [],
+  "topRated": 4100,
+  "maxSongs": 5999,
+  "difficulty": "Expert",
+  "audioBitrate": "80k",
+  "maxMinutes": 300,
+  "maxFiles": 19000
+}

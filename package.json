@@ -1,0 +1,13 @@
+{
+  "name": "vrsaber-convert",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Beat Saber 形式の譜面を VRChat 用セイバー試作ワールドのスロット形式に変換する補助ツール",
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "testmap": "node make-testmap.mjs testmaps",
+    "serve": "node serve.mjs"
+  },
+  "engines": { "node": ">=20" }
+}
