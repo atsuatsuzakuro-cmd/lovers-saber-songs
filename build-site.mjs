@@ -22,6 +22,9 @@ const out = resolve(outIdx >= 0 ? args[outIdx + 1] : join(import.meta.dirname, '
 const cfgIdx = args.indexOf('--config');
 const cfg = JSON.parse(readFileSync(join(import.meta.dirname, cfgIdx >= 0 ? args[cfgIdx + 1] : 'publish.config.json'), 'utf8'));
 const siteUrl = (cfg.siteUrl || '').replace(/\/?$/, '/');
+// 試しに少しだけ作るとき(--max 10 など): いちばん多い曲数をその数にする
+const maxIdx = args.indexOf('--max');
+if (maxIdx >= 0 && parseInt(args[maxIdx + 1], 10) > 0) cfg.maxSongs = parseInt(args[maxIdx + 1], 10);
 const UA = { headers: { 'User-Agent': 'vrsaber-publish/0.1' } };
 const DiffOrder = ['Easy', 'Normal', 'Hard', 'Expert', 'ExpertPlus'];
 const slotDir = (n) => join(out, 'slots', String(n).padStart(3, '0'));

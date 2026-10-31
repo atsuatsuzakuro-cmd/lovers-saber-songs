@@ -5,6 +5,11 @@ on:
   schedule:
     - cron: '0 */6 * * *'
   workflow_dispatch:
+    inputs:
+      max_songs:
+        description: '試しに作る曲数(空なら設定どおり全部)'
+        required: false
+        default: ''
 concurrency:
   group: publish-songs
   cancel-in-progress: false
@@ -20,7 +25,7 @@ jobs:
       - name: ffmpeg を入れる
         run: sudo apt-get update && sudo apt-get install -y ffmpeg
       - name: 曲のファイルを作る
-        run: node build-site.mjs --out site
+        run: node build-site.mjs --out site ${{ github.event.inputs.max_songs && format('--max {0}', github.event.inputs.max_songs) || '' }}
       - name: Cloudflare Pages に置く
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
