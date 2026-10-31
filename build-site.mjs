@@ -30,10 +30,19 @@ const DiffOrder = ['Easy', 'Normal', 'Hard', 'Expert', 'ExpertPlus'];
 const slotDir = (n) => join(out, 'slots', String(n).padStart(3, '0'));
 const log = (s) => console.log(s);
 
+// BeatSaver に断られた(混んでいる・続けて頼みすぎた)ときは、少し待ってやり直す
 async function getJson(url) {
-  const r = await fetch(url, UA);
-  if (!r.ok) throw new Error(`${url}: ${r.status}`);
-  return r.json();
+  let last = '';
+  for (let t = 0; t < 6; t++) {
+    try {
+      const r = await fetch(url, UA);
+      if (r.ok) return await r.json();
+      last = String(r.status);
+      if (r.status === 404) break;
+    } catch (e) { last = e.message; }
+    await new Promise((res) => setTimeout(res, 2000 * 2 ** t));
+  }
+  throw new Error(`${url}: ${last}`);
 }
 
 function pickDiff(diffs, want) {
@@ -80,7 +89,10 @@ async function collectMaps() {
   const goal = Math.min(cfg.maxSongs, fileRoom, maps.length + (cfg.topRated ?? 0));
   if (maps.length + (cfg.topRated ?? 0) > goal) log(`置き場に入りきらないので、評価順の曲を ${maps.length + (cfg.topRated ?? 0) - goal} 曲減らします`);
   for (let page = 0; maps.length < goal && page < 200; page++) {
-    const j = await getJson(`https://api.beatsaver.com/search/text/${page}?sortOrder=Rating&pageSize=100`);
+    let j;
+    try { j = await getJson(`https://api.beatsaver.com/search/text/${page}?sortOrder=Rating&pageSize=100`); }
+    catch (e) { log(`人気順の ${page + 1} ページ目を読めませんでした(${e.message})。ここまでの曲で進めます`); break; }
+    await new Promise((res) => setTimeout(res, 300));
     if (!(j.docs ?? []).length) break;
     for (const m of j.docs) if (maps.length < goal) add(m);
   }
