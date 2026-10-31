@@ -36,7 +36,12 @@ const log = (s) => console.log(s);
 // BeatSaver から取ってきた ZIP(1 つ 6MB くらい)。曲を変えたらすぐ消す。
 // 残しておくと、GitHub のパソコンの空き(14GB くらい)がいっぱいになって、途中で止まってしまう
 const dropZips = () => rmSync(join(import.meta.dirname, 'downloads'), { recursive: true, force: true });
-const freeGB = () => { try { const st = statfsSync(out); return (st.bavail * st.bsize / 1073741824).toFixed(1); } catch { return '?'; } };
+const freeBytes = () => { try { const st = statfsSync(out); return st.bavail * st.bsize; } catch { return Infinity; } };
+const freeGB = () => { const b = freeBytes(); return b === Infinity ? '?' : (b / 1073741824).toFixed(1); };
+// 空きがこれより少なくなったら、新しい曲を作るのをやめて、そこまでの分を必ず Cloudflare に置く(空きがなくなって全部むだになるのを防ぐ)
+const MinFree = 3 * 1073741824;
+let lowSpaceTold = false;
+const lowSpace = () => { const low = freeBytes() < MinFree; if (low && !lowSpaceTold) { lowSpaceTold = true; log(`空きが ${freeGB()}GB になったので、新しい曲はここまで(残りは次の回)`); } return low; };
 
 // BeatSaver に断られた(混んでいる・続けて頼みすぎた)ときは、少し待ってやり直す
 async function getJson(url) {
@@ -174,7 +179,7 @@ async function main() {
         ok = true; reused++;
       } catch {}
     }
-    if (!ok && Date.now() - started > budgetMs) { later++; rmSync(dir, { recursive: true, force: true }); continue; }
+    if (!ok && (Date.now() - started > budgetMs || lowSpace())) { later++; rmSync(dir, { recursive: true, force: true }); continue; }
     if (!ok) {
       const r = spawnSync(process.execPath, [join(import.meta.dirname, 'convert.mjs'), '--bsr', m.id, '--slot', String(p.slot), '--diff', d.difficulty, '--out', out, '--no-atlas', '--abr', cfg.audioBitrate, '--genre', entry.genre, '--rights', entry.rights], { stdio: 'ignore' });
       ok = r.status === 0 && existsSync(join(dir, 'chart.json')) && existsSync(join(dir, 'audio.mp4'));
