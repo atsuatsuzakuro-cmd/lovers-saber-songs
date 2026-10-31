@@ -2,7 +2,8 @@
   "siteUrl": "https://lovers-saber.pages.dev/",
   "projectName": "lovers-saber",
   "priorityIdFiles": [
-    "udon-ids.json"
+    "udon-ids.json",
+    "maul-ids.json"
   ],
   "playlists": [],
   "topRated": 4100,
