@@ -157,7 +157,7 @@ async function main() {
       characteristic: 'Standard', difficulty: d.difficulty, songId: `bsr:${m.id}`, mapHash: ver.hash, chartKey: `bsr:${m.id}|${ver.hash}|Standard|${d.difficulty}`,
       noteCount: d.notes ?? 0, bpm: md.bpm ?? 0, length: md.duration ?? 0, genre: genreFromTags(m.tags), cover: false, rights: `BeatSaver ${m.id}(${m.uploader?.name ?? ''} さん)`,
     };
-    if (mDiff) entry.maul = { characteristic: mDiff.characteristic, difficulty: mDiff.difficulty, label: mDiff.label ?? '', noteCount: mDiff.notes ?? 0 };
+    if (mDiff) entry.maul = { characteristic: mDiff.characteristic, difficulty: mDiff.difficulty, label: mDiff.label ?? '', noteCount: mDiff.notes ?? 0, chartKey: `bsr:${m.id}|${ver.hash}|${mDiff.characteristic}|${mDiff.difficulty}` };
     // 前回と同じ版・同じ難易度なら、前回のファイルを取り直す
     let ok = false;
     if (p.prev && p.prev.mapHash === ver.hash && p.prev.difficulty === d.difficulty) {
