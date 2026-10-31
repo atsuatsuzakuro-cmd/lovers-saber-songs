@@ -9,6 +9,6 @@
   "maxSongs": 5999,
   "difficulty": "Expert",
   "audioBitrate": "80k",
-  "maxMinutes": 300,
+  "maxMinutes": 200,
   "maxFiles": 19000
 }

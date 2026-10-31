@@ -14,7 +14,7 @@
 //
 // 同じ曲は、前回と同じスロットに置く(遊んでいる途中の人の曲が入れ替わらないように)。
 // 前回と同じ曲・同じ版は、前回のファイルを取り直して使い、新しい曲だけ BeatSaver から取ってきて変える
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync, copyFileSync, unlinkSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync, copyFileSync, unlinkSync, statfsSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { buildAtlases } from './lib/covers.mjs';
@@ -33,6 +33,10 @@ const UA = { headers: { 'User-Agent': 'vrsaber-publish/0.1' } };
 const DiffOrder = ['Easy', 'Normal', 'Hard', 'Expert', 'ExpertPlus'];
 const slotDir = (n) => join(out, 'slots', String(n).padStart(3, '0'));
 const log = (s) => console.log(s);
+// BeatSaver から取ってきた ZIP(1 つ 6MB くらい)。曲を変えたらすぐ消す。
+// 残しておくと、GitHub のパソコンの空き(14GB くらい)がいっぱいになって、途中で止まってしまう
+const dropZips = () => rmSync(join(import.meta.dirname, 'downloads'), { recursive: true, force: true });
+const freeGB = () => { try { const st = statfsSync(out); return (st.bavail * st.bsize / 1073741824).toFixed(1); } catch { return '?'; } };
 
 // BeatSaver に断られた(混んでいる・続けて頼みすぎた)ときは、少し待ってやり直す
 async function getJson(url) {
@@ -174,7 +178,7 @@ async function main() {
     if (!ok) {
       const r = spawnSync(process.execPath, [join(import.meta.dirname, 'convert.mjs'), '--bsr', m.id, '--slot', String(p.slot), '--diff', d.difficulty, '--out', out, '--no-atlas', '--abr', cfg.audioBitrate, '--genre', entry.genre, '--rights', entry.rights], { stdio: 'ignore' });
       ok = r.status === 0 && existsSync(join(dir, 'chart.json')) && existsSync(join(dir, 'audio.mp4'));
-      if (ok) made++; else { failed++; rmSync(dir, { recursive: true, force: true }); log(`  とばしました: ${entry.title}(BeatSaver ${m.id})`); continue; }
+      if (ok) made++; else { failed++; dropZips(); rmSync(dir, { recursive: true, force: true }); log(`  とばしました: ${entry.title}(BeatSaver ${m.id})`); continue; }
     }
     // ジャケット(まとめ画像を作るためだけに使う。置き場には置かない)
     try {
@@ -197,8 +201,9 @@ async function main() {
       }
       if (mok) maulCount++; else delete entry.maul;
     }
+    dropZips();
     slots.push(entry);
-    if ((reused + made) % 50 === 0) log(`  ${reused + made} 曲(使い回し ${reused} / 新しく ${made})`);
+    if ((reused + made) % 50 === 0) log(`  ${reused + made} 曲(使い回し ${reused} / 新しく ${made})・空き ${freeGB()}GB`);
   }
   slots.sort((x, y) => x.slot - y.slot);
   const total = (await getJson('https://api.beatsaver.com/search/text/0?pageSize=1')).info?.total ?? 0;
