@@ -15,7 +15,7 @@
 //
 // 同じ曲は、前回と同じスロットに置く(遊んでいる途中の人の曲が入れ替わらないように)。
 // 前回と同じ曲・同じ版は、前回のファイルを取り直して使い、新しい曲だけ BeatSaver から取ってきて変える
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync, copyFileSync, unlinkSync, statfsSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync, copyFileSync, unlinkSync, statfsSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { buildAtlases } from './lib/covers.mjs';
@@ -233,6 +233,9 @@ async function main() {
   for (const s of slots) for (const f of ['cover.jpg', 'cover.png']) { const p = join(slotDir(s.slot), f); if (existsSync(p)) unlinkSync(p); }
   writeFileSync(join(out, 'catalog.json'), JSON.stringify(cat));
   writeFileSync(join(out, '_headers'), '/*\n  Access-Control-Allow-Origin: *\n  Cache-Control: public, max-age=300\n');
+  // 曲さがしのページと遊び方ガイド(web/ の中身を、置き場のいちばん上にそのまま置く。数ファイルだけ)
+  const webDir = join(import.meta.dirname, 'web');
+  if (existsSync(webDir)) for (const f of readdirSync(webDir)) copyFileSync(join(webDir, f), join(out, f));
   log(`できました: ${slots.length - 1} 曲(使い回し ${reused} / 新しく ${made} / とばした ${failed} / 次の回へ ${later})。ダブルセイバー用の譜面がある曲: ${maulCount} 曲。全部の難易度入りに作り直した曲: ${upgraded} 曲(選べる曲 ${slots.filter((s) => s.diffs).length} 曲)`);
 }
 

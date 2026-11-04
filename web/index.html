@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lover's Saber 曲さがし</title>
+<meta name="description" content="VRChat ワールド「Lover's Saber」で遊べる曲をさがして、ワールドでの見つけ方を調べるページ">
+<meta name="theme-color" content="#060a1c">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#060a1c; --navy:#0c1433; --navy2:#121d47; --line:#22315f;
+  --cyan:#4fe3ff; --pink:#ff5fae; --gold:#ffd27a; --text:#e8f0ff; --soft:#9fb2dc; --dim:#6f80aa;
+  --r:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--bg); color:var(--text);
+  font-family:"M PLUS Rounded 1c",system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;
+  font-size:15px; line-height:1.6; min-height:100vh;
+  background-image:radial-gradient(ellipse at 50% -10%,#1b2a6b 0%,rgba(6,10,28,0) 60%),radial-gradient(ellipse at 100% 100%,#2a1240 0%,rgba(6,10,28,0) 55%);
+  background-attachment:fixed;
+}
+#sky{position:fixed;inset:0;z-index:-1;pointer-events:none}
+a{color:var(--cyan)}
+.wrap{max-width:980px;margin:0 auto;padding:0 16px 120px}
+header{text-align:center;padding:28px 0 8px;position:relative}
+.logo{font-weight:800;font-size:clamp(34px,9vw,60px);letter-spacing:.02em;margin:0;line-height:1.1;
+  color:#fff;text-shadow:0 0 6px var(--cyan),0 0 18px var(--cyan),0 0 36px rgba(79,227,255,.5)}
+.logo .s{color:#fff;text-shadow:0 0 6px var(--pink),0 0 18px var(--pink),0 0 36px rgba(255,95,174,.5)}
+.sub{margin:6px 0 0;color:var(--soft);font-weight:700}
+.top-links{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:14px 0 4px}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:999px;border:1px solid var(--pink);
+  color:#fff;text-decoration:none;font-weight:700;background:rgba(255,95,174,.12);box-shadow:0 0 12px rgba(255,95,174,.3)}
+.lang{position:absolute;right:0;top:12px;background:transparent;color:var(--soft);border:1px solid var(--line);border-radius:999px;padding:4px 10px;font:inherit;font-size:12px;cursor:pointer}
+.card{background:linear-gradient(180deg,rgba(18,29,71,.92),rgba(12,20,51,.92));border:1px solid var(--line);border-radius:var(--r);padding:14px}
+details.help{margin:14px 0}
+details.help summary{cursor:pointer;font-weight:800;color:var(--gold);list-style:none}
+details.help summary::before{content:"▶ ";font-size:.8em}
+details.help[open] summary::before{content:"▼ "}
+details.help ol{padding-left:1.3em;margin:8px 0}
+details.help li{margin:4px 0}
+.k{display:inline-block;padding:0 7px;border-radius:6px;background:#1b2a63;border:1px solid #3a4f95;font-weight:700;color:#fff;white-space:nowrap}
+.controls{position:sticky;top:0;z-index:5;padding:10px 0;background:linear-gradient(180deg,var(--bg) 75%,rgba(6,10,28,0))}
+@media(max-width:600px){.controls{position:static}}
+.search{display:flex;gap:8px}
+.search input{flex:1;min-width:0;font:inherit;font-size:16px;padding:11px 14px;border-radius:12px;border:1px solid var(--cyan);
+  background:#0a1230;color:#fff;outline:none;box-shadow:0 0 10px rgba(79,227,255,.25)}
+.search input::placeholder{color:var(--dim)}
+.btn{font:inherit;font-weight:700;padding:9px 12px;border-radius:12px;border:1px solid var(--line);background:var(--navy2);color:var(--text);cursor:pointer;white-space:nowrap}
+.btn:hover{border-color:var(--cyan)}
+.btn[disabled]{opacity:.4;cursor:default}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;align-items:center}
+.filters select{font:inherit;font-size:14px;padding:7px 8px;border-radius:10px;border:1px solid var(--line);background:#0a1230;color:var(--text);max-width:100%}
+.chk{display:inline-flex;align-items:center;gap:5px;font-size:14px;color:var(--soft);cursor:pointer}
+.chk input{accent-color:var(--pink);width:16px;height:16px}
+.count{color:var(--soft);font-size:13px;margin:6px 2px 0}
+.list{display:grid;gap:12px;margin-top:6px}
+@media(min-width:760px){.list{grid-template-columns:1fr 1fr}}
+.song{display:flex;flex-direction:column;gap:10px}
+.row1{display:flex;gap:12px;align-items:flex-start}
+.cov{flex:none;width:72px;height:72px;border-radius:10px;overflow:hidden;position:relative;
+  background:linear-gradient(135deg,#1d2c6e,#3a1a5a);display:grid;place-items:center;color:rgba(255,255,255,.55);font-size:28px;border:1px solid #2c3d7a}
+.cov.img{background-repeat:no-repeat;background-size:1600% 1600%;font-size:0}
+.meta{min-width:0;flex:1}
+.no{display:inline-block;font-weight:800;color:var(--bg);background:var(--cyan);border-radius:7px;padding:0 8px;font-size:13px;box-shadow:0 0 8px rgba(79,227,255,.5)}
+.genre{font-size:12px;color:var(--pink);margin-left:6px;font-weight:700}
+.maulb{font-size:12px;color:var(--gold);margin-left:6px;font-weight:700}
+.title{font-weight:800;font-size:17px;margin:3px 0 0;line-height:1.35;word-break:break-word}
+.title small{font-weight:400;color:var(--soft);font-size:13px}
+.who{color:var(--soft);font-size:13px;word-break:break-word}
+.stats{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:13px;color:var(--soft)}
+.stats b{color:#fff}
+.diffs{display:flex;flex-wrap:wrap;gap:5px}
+.d{font-size:12px;border-radius:7px;padding:1px 7px;border:1px solid;white-space:nowrap}
+.d.Easy{color:#5df29a;border-color:#2c8b5a}.d.Normal{color:#59c6ff;border-color:#2b6f99}.d.Hard{color:#ffb35a;border-color:#9a6326}
+.d.Expert{color:#ff6b8a;border-color:#9b3047}.d.ExpertPlus{color:#c99bff;border-color:#6c46a6}.d.Maul{color:var(--gold);border-color:#8b6d2a}
+.find{border:1px solid rgba(255,95,174,.55);border-radius:12px;padding:9px 11px;background:rgba(255,95,174,.07)}
+.find h3{margin:0 0 3px;font-size:14px;color:var(--pink)}
+.find ul{margin:0;padding-left:1.1em}
+.find li{margin:2px 0}
+.find .best{color:#fff;font-weight:700}
+.find small{color:var(--soft);display:block;margin-top:3px}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.rights{font-size:11px;color:var(--dim);word-break:break-all}
+.play{border-color:var(--cyan);color:var(--cyan)}
+.play.on{background:var(--cyan);color:var(--bg)}
+.pager{display:flex;justify-content:center;align-items:center;gap:8px;margin:16px 0}
+.pager span{color:var(--soft);font-size:14px}
+.state{text-align:center;padding:40px 10px;color:var(--soft)}
+.spin{width:44px;height:44px;margin:0 auto 12px;border-radius:50%;border:3px solid rgba(79,227,255,.2);border-top-color:var(--cyan);animation:sp 1s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.bar{height:6px;border-radius:3px;background:#17214a;max-width:260px;margin:10px auto 0;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--pink))}
+#player{position:fixed;left:0;right:0;bottom:0;z-index:10;background:rgba(10,16,42,.97);border-top:1px solid var(--cyan);
+  padding:8px 16px calc(8px + env(safe-area-inset-bottom));display:none;box-shadow:0 -4px 20px rgba(79,227,255,.2)}
+#player.show{display:block}
+#player .in{max-width:980px;margin:0 auto;display:flex;gap:10px;align-items:center}
+#player .pt{flex:1;min-width:0;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#player audio{width:min(320px,45vw);height:36px}
+footer{margin-top:30px;color:var(--dim);font-size:12px;text-align:center}
+footer p{margin:6px 0}
+</style>
+</head>
+<body>
+<canvas id="sky"></canvas>
+<div class="wrap">
+  <header>
+    <button class="lang" id="lang" type="button">English</button>
+    <h1 class="logo">Lover's <span class="s">Saber</span></h1>
+    <p class="sub" data-t="sub">曲さがし</p>
+    <div class="top-links"><a class="pill" href="guide.html" data-t="guideLink">遊び方ガイド →</a></div>
+  </header>
+
+  <details class="help card" id="help">
+    <summary data-t="howTitle">ワールドで 曲を見つける方法</summary>
+    <div data-t="howBody">
+    <ol>
+      <li>ロードの前の <b>選曲パネル</b> を見ます。左の列に ジャンルのボタン(<span class="k">すべて</span> <span class="k">ボカロ</span> <span class="k">アニメ</span> <span class="k">J-POP</span> <span class="k">ゲーム</span> <span class="k">洋楽</span> <span class="k">★好き</span> …)があります。</li>
+      <li>ジャンルのボタンを押すと、その曲だけが <b>番号の小さい順</b> に並びます。1 ページは <b>6 曲</b> です。</li>
+      <li>上の段の <span class="k">◀</span> <span class="k">▶</span> で 1 ページずつ、数字のボタンで そのページへ。いちばん右と左の数字は、最後と最初のページです。</li>
+      <li>遠いページは、リストの右の <b>つまみ</b> を上下に動かすと早いです(上 = 最初、下 = 最後)。リストも つかんで上下に動かせます。</li>
+      <li>曲を選ぶと、右の表の <span class="k">番号</span> に このページと同じ番号が出ます。同じなら OK!</li>
+      <li>よく遊ぶ曲は <span class="k">☆</span> を押すと <span class="k">★好き</span> に入ります。次からすぐ見つかります。</li>
+    </ol>
+    <p style="margin:6px 0 0;color:var(--soft);font-size:13px">曲は 6 時間ごとに入れかわることがあります。ページが少しずれていたら、前後のページも見てね。</p>
+    </div>
+  </details>
+
+  <div class="controls">
+    <div class="search">
+      <input id="q" type="search" enterkeyhint="search" autocomplete="off" placeholder="曲名・アーティスト・譜面の作者・番号">
+    </div>
+    <div class="filters">
+      <select id="genre" aria-label="ジャンル"></select>
+      <select id="diff" aria-label="難易度"></select>
+      <select id="sort" aria-label="並べ方"></select>
+      <button class="btn" id="dir" type="button" aria-label="順番">↑</button>
+      <label class="chk" id="maulWrap"><input type="checkbox" id="maul"><span data-t="maulOnly">ダブルセイバーだけ</span></label>
+      <label class="chk"><input type="checkbox" id="covers"><span data-t="showCovers">ジャケットを出す</span></label>
+    </div>
+    <div class="count" id="count"></div>
+  </div>
+
+  <div id="state" class="state"><div class="spin"></div><div data-t="loading">曲の一覧を読み込んでいます…</div><div class="bar"><i id="prog"></i></div><div id="progt" style="font-size:12px;margin-top:6px"></div></div>
+  <div class="list" id="list"></div>
+  <div class="pager" id="pager" hidden>
+    <button class="btn" id="prev" type="button">◀</button><span id="pinfo"></span><button class="btn" id="next" type="button">▶</button>
+  </div>
+
+  <footer>
+    <p data-t="credit1">曲と譜面は <a href="https://beatsaver.com/" target="_blank" rel="noopener">BeatSaver</a> から来ています。譜面を作った マッパーのみなさん、曲を作った アーティストのみなさんに 感謝します。</p>
+    <p data-t="credit2">それぞれの曲の下に、もとの譜面の番号(BeatSaver の ID)と 作った人を書いています。</p>
+    <p><a href="guide.html" data-t="guideLink">遊び方ガイド →</a></p>
+  </footer>
+</div>
+
+<div id="player"><div class="in"><div class="pt" id="ptitle"></div><audio id="audio" controls preload="none"></audio><button class="btn" id="pclose" type="button" aria-label="とじる">✕</button></div></div>
+
+<script>
+(function(){
+'use strict';
+// ---- 夜空(1 回だけ描く) ----
+function drawSky(){
+  var c=document.getElementById('sky'),dpr=Math.min(window.devicePixelRatio||1,2),w=innerWidth,h=innerHeight;
+  c.width=w*dpr;c.height=h*dpr;c.style.width=w+'px';c.style.height=h+'px';
+  var g=c.getContext('2d');g.scale(dpr,dpr);
+  var n=Math.round(w*h/2600),seed=7;function rnd(){seed=(seed*16807)%2147483647;return seed/2147483647;}
+  for(var i=0;i<n;i++){var x=rnd()*w,y=rnd()*h,r=rnd()*1.3+.2,a=rnd()*.7+.2,p=rnd();
+    g.fillStyle=p<.12?'rgba(255,150,210,'+a+')':p<.3?'rgba(140,230,255,'+a+')':'rgba(255,255,255,'+a+')';
+    g.beginPath();g.arc(x,y,r,0,7);g.fill();}
+}
+drawSky();var rt;addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(drawSky,300);});
+
+// ---- ことば(日本語 / English) ----
+var T={
+ ja:{sub:'曲さがし',guideLink:'遊び方ガイド →',loading:'曲の一覧を読み込んでいます…',ph:'曲名・アーティスト・譜面の作者・番号',
+  all:'ジャンル: すべて',allDiff:'難易度: ぜんぶ',maulOnly:'ダブルセイバーだけ',showCovers:'ジャケットを出す',
+  sNo:'番号順',sTitle:'曲名順',sBpm:'BPM 順',sLen:'長さ順',sNotes:'ノーツ数順',
+  count:function(n,t){return n===t?t+' 曲':n+' 曲 / 全 '+t+' 曲';},none:'見つかりませんでした。ことばを短くしてみてね。',
+  err:'曲の一覧を読み込めませんでした。少し待って、ページを読み直してね。',
+  pinfo:function(p,n){return p+' / '+n+' ページ';},
+  findH:'ワールドでの さがし方',page:function(g,p,r,tp){return '「'+g+'」→ ページ <b>'+p+'</b> の 上から <b>'+r+'</b> 番目 <span style="color:var(--dim)">(全 '+tp+' ページ)</span>';},
+  knob:function(x){return '右のつまみを 上から 約 '+x+'% の所へ';},
+  check:function(n){return '選んだら、右の表の「番号」が '+n+' か たしかめてね';},
+  maulTab:'ダブルセイバー',bpm:'BPM',len:'長さ',notes:'ノーツ',play:'▶ 試聴',stop:'■ 止める',maul:'ダブルセイバー',
+  coverWarn:'ジャケットの画像は 1 枚 約 9MB(256 曲ぶん)です。スマホの通信量に気をつけてね。',
+  credit1:null,credit2:null,howTitle:null,howBody:null,
+  g:{vocaloid:'ボカロ',anime:'アニメ',jpop:'J-POP',game:'ゲーム',western:'洋楽',other:'その他'},allG:'すべて'},
+ en:{sub:'Song Finder',guideLink:'How to play →',loading:'Loading the song list…',ph:'Title, artist, mapper or number',
+  all:'Genre: All',allDiff:'Difficulty: Any',maulOnly:'Double saber only',showCovers:'Show covers',
+  sNo:'Number',sTitle:'Title',sBpm:'BPM',sLen:'Length',sNotes:'Notes',
+  count:function(n,t){return n===t?t+' songs':n+' of '+t+' songs';},none:'No songs found. Try a shorter word.',
+  err:'Could not load the song list. Please wait a bit and reload.',
+  pinfo:function(p,n){return 'Page '+p+' / '+n;},
+  findH:'How to find it in the world',page:function(g,p,r,tp){return '"'+g+'" → page <b>'+p+'</b>, row <b>'+r+'</b> from the top <span style="color:var(--dim)">('+tp+' pages)</span>';},
+  knob:function(x){return 'Move the knob right of the list to about '+x+'% from the top';},
+  check:function(n){return 'After picking it, check that "No." in the table says '+n;},
+  maulTab:'Double Saber',bpm:'BPM',len:'Length',notes:'Notes',play:'▶ Preview',stop:'■ Stop',maul:'Double saber',
+  coverWarn:'Each cover image file is about 9 MB (256 songs). Mind your mobile data.',
+  credit1:'Songs and maps come from <a href="https://beatsaver.com/" target="_blank" rel="noopener">BeatSaver</a>. Thanks to all the mappers and artists.',
+  credit2:'Each song shows its BeatSaver ID and who made the map.',
+  howTitle:'How to find a song in the world',
+  howBody:'<ol><li>Look at the <b>song panel</b> in front of a road. On the left are genre buttons (<span class="k">すべて All</span> <span class="k">ボカロ</span> <span class="k">アニメ</span> <span class="k">J-POP</span> <span class="k">ゲーム</span> <span class="k">洋楽</span> <span class="k">★好き Fav</span> …).</li><li>A genre button lists its songs <b>by number</b>. One page = <b>6 songs</b>.</li><li>Use <span class="k">◀</span> <span class="k">▶</span> on the top row, or the page number buttons (left = first, right = last page).</li><li>For far pages, drag the <b>knob</b> right of the list (top = first, bottom = last). You can also grab the list.</li><li>When you pick a song, the <span class="k">No.</span> in the table should match this page.</li><li>Press <span class="k">☆</span> to add it to <span class="k">★好き</span> (favorites).</li></ol><p style="margin:6px 0 0;color:var(--soft);font-size:13px">Songs can change every 6 hours. If the page is a little off, look at the pages next to it.</p>',
+  g:{vocaloid:'Vocaloid',anime:'Anime',jpop:'J-POP',game:'Game',western:'Western',other:'Other'},allG:'All'}
+};
+// ワールドのボタンの文字(ジャンルのボタンは日本語のまま出す)
+var GJ={vocaloid:'ボカロ',anime:'アニメ',jpop:'J-POP',game:'ゲーム',western:'洋楽'};
+var GORDER=['vocaloid','anime','jpop','game','western','other'];
+var DIFFS=['Easy','Normal','Hard','Expert','ExpertPlus'];
+var DL={Easy:'Easy',Normal:'Normal',Hard:'Hard',Expert:'Expert',ExpertPlus:'Expert+'};
+var PER=30,ROWS=6;
+var lang='ja';try{if(localStorage.getItem('ls-lang')==='en')lang='en';}catch(e){}
+var JA_HTML={};
+function t(k){return T[lang][k];}
+var $=function(id){return document.getElementById(id);};
+
+var all=[],view=[],page=0,dirAsc=true,cnt={all:0,maul:0},gcnt={};
+var cur=null; // 試聴中のスロット
+
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function norm(s){return String(s||'').normalize('NFKC').toLowerCase().replace(/[ァ-ヶ]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-96);}).replace(/\s+/g,' ');}
+function clock(sec){sec=Math.round(sec||0);var m=Math.floor(sec/60),s=sec%60;return m+':'+(s<10?'0':'')+s;}
+function pad3(n){n=String(n);while(n.length<3)n='0'+n;return n;}
+
+function applyLang(){
+  document.documentElement.lang=lang;
+  $('lang').textContent=lang==='ja'?'English':'日本語';
+  document.querySelectorAll('[data-t]').forEach(function(el){
+    var k=el.getAttribute('data-t');
+    if(!(k in JA_HTML))JA_HTML[k]=el.innerHTML;
+    var v=T[lang][k];
+    el.innerHTML=(lang==='ja'||v==null)?JA_HTML[k]:v;
+  });
+  $('q').placeholder=t('ph');
+  fillSelects();
+  if(all.length)render();
+}
+function fillSelects(){
+  var g=$('genre'),gv=g.value||'';
+  g.innerHTML='<option value="">'+esc(t('all'))+'</option>'+GORDER.map(function(k){return '<option value="'+k+'">'+esc(T[lang].g[k])+(gcnt[k]?' ('+gcnt[k]+')':'')+'</option>';}).join('');
+  g.value=gv;
+  var d=$('diff'),dv=d.value||'';
+  d.innerHTML='<option value="">'+esc(t('allDiff'))+'</option>'+DIFFS.map(function(k){return '<option value="'+k+'">'+DL[k]+'</option>';}).join('');
+  d.value=dv;
+  var s=$('sort'),sv=s.value||'no';
+  s.innerHTML=[['no','sNo'],['title','sTitle'],['bpm','sBpm'],['length','sLen'],['notes','sNotes']].map(function(x){return '<option value="'+x[0]+'">'+esc(t(x[1]))+'</option>';}).join('');
+  s.value=sv;
+}
+
+// ---- 読み込み ----
+function load(){
+  fetch('catalog.json',{cache:'no-cache'}).then(function(r){
+    if(!r.ok)throw new Error(r.status);
+    var total=+r.headers.get('content-length')||0;
+    if(!r.body||!window.TextDecoder)return r.text();
+    var rd=r.body.getReader(),chunks=[],got=0;
+    function pump(){return rd.read().then(function(x){
+      if(x.done){var dec=new TextDecoder(),s='';for(var i=0;i<chunks.length;i++)s+=dec.decode(chunks[i],{stream:true});return s+dec.decode();}
+      chunks.push(x.value);got+=x.value.length;
+      $('progt').textContent=(got/1048576).toFixed(1)+' MB';
+      $('prog').style.width=(total?Math.min(100,got/total*100):Math.min(95,got/4.5e6*100))+'%';
+      return pump();});}
+    return pump();
+  }).then(function(txt){prepare(JSON.parse(txt));}).catch(function(e){
+    console.warn(e);$('state').innerHTML='<p>'+esc(t('err'))+'</p>';
+  });
+}
+function prepare(cat){
+  var slots=(cat.slots||[]).filter(function(s){return s&&s.title;}).sort(function(a,b){return a.slot-b.slot;});
+  var gi={},mi=0;
+  slots.forEach(function(s,i){
+    s.no=s.slot+1;
+    s.ai=i; // 「すべて」の中の並び(0 から)
+    var g=GORDER.indexOf(s.genre)>=0?s.genre:'other';s.g=g;
+    if(g!=='other'){s.gi=gi[g]||0;gi[g]=s.gi+1;}
+    gcnt[g]=(gcnt[g]||0)+1;
+    if(s.maul){s.mi=mi++;}
+    s.dl=(s.diffs&&s.diffs.length?s.diffs:[{difficulty:s.difficulty,noteCount:s.noteCount}]).slice().sort(function(a,b){return DIFFS.indexOf(a.difficulty)-DIFFS.indexOf(b.difficulty);});
+    s.ds={};s.dl.forEach(function(d){s.ds[d.difficulty]=1;});
+    s.mx=s.dl.reduce(function(m,d){return Math.max(m,d.noteCount||0);},0);
+    s.mp=(s.mappers||[]).join(', ');
+    s.key=norm([s.title,s.subTitle,s.artist,s.mp,s.rights].join(' '));
+    s.tk=norm(s.title);
+  });
+  cnt.all=slots.length;cnt.maul=mi;cnt.g=gi;
+  all=slots;
+  if(!mi)$('maulWrap').hidden=true;
+  $('state').hidden=true;
+  fillSelects();
+  update();
+}
+
+// ---- さがす・しぼる・並べる ----
+function update(){
+  var q=norm($('q').value).trim(),toks=q?q.split(' '):[],g=$('genre').value,d=$('diff').value,m=$('maul').checked;
+  var num=/^\d+$/.test(q)?+q:-1;
+  var res=[];
+  for(var i=0;i<all.length;i++){var s=all[i];
+    if(g&&s.g!==g)continue;if(d&&!s.ds[d])continue;if(m&&!s.maul)continue;
+    if(toks.length&&s.no!==num){var ok=true;for(var k=0;k<toks.length;k++)if(s.key.indexOf(toks[k])<0){ok=false;break;}if(!ok)continue;}
+    res.push(s);}
+  var so=$('sort').value,sg=dirAsc?1:-1;
+  var f={no:function(a,b){return a.slot-b.slot;},
+    title:function(a,b){return a.tk<b.tk?-1:a.tk>b.tk?1:a.slot-b.slot;},
+    bpm:function(a,b){return (a.bpm-b.bpm)||a.slot-b.slot;},
+    length:function(a,b){return (a.length-b.length)||a.slot-b.slot;},
+    notes:function(a,b){return (a.mx-b.mx)||a.slot-b.slot;}}[so];
+  res.sort(function(a,b){return f(a,b)*sg;});
+  if(num>=0){var ix=res.findIndex(function(s){return s.no===num;});if(ix>0)res.unshift(res.splice(ix,1)[0]);}
+  view=res;page=0;render();
+}
+function findHtml(s){
+  var L=T[lang],h='<div class="find"><h3>'+esc(L.findH)+'</h3><ul>';
+  function line(name,idx,total,best){
+    var p=Math.floor(idx/ROWS)+1,r=idx%ROWS+1,tp=Math.max(1,Math.ceil(total/ROWS));
+    var x='<li'+(best?' class="best"':'')+'>'+L.page(name,p,r,tp);
+    if(tp>7){var max=Math.max(1,total-ROWS),pct=Math.round(Math.min(1,(p-1)*ROWS/max)*100);x+='<br><small style="display:inline;color:var(--soft)">'+esc(L.knob(pct))+'</small>';}
+    return x+'</li>';}
+  if(s.maul)h+=line(lang==='ja'?'ダブルセイバー(アイコン)':'Double Saber (icon)',s.mi,cnt.maul,true);
+  if(s.g!=='other')h+=line(GJ[s.g]+(lang==='en'?' / '+L.g[s.g]:''),s.gi,cnt.g[s.g],!s.maul);
+  h+=line(lang==='ja'?'すべて':'すべて / All',s.ai,cnt.all,s.g==='other'&&!s.maul);
+  return h+'</ul><small>'+esc(L.check(s.no))+'</small></div>';
+}
+function card(s){
+  var L=T[lang],cov='<div class="cov">♪</div>';
+  if(s.cover&&$('covers').checked){var a=Math.floor(s.slot/256),ti=s.slot%256,cx=ti%16,cy=Math.floor(ti/16);
+    cov='<div class="cov img" style="background-image:url(covers/atlas_'+pad3(a)+'.png);background-position:'+(cx*100/15)+'% '+(cy*100/15)+'%"></div>';}
+  var diffs=s.dl.map(function(d){return '<span class="d '+esc(d.difficulty)+'">'+esc(DL[d.difficulty]||d.difficulty)+' '+(d.noteCount||0)+'</span>';}).join('');
+  if(s.maul)diffs+='<span class="d Maul">⚔ '+esc(L.maul)+' '+esc(DL[s.maul.difficulty]||s.maul.difficulty)+' '+(s.maul.noteCount||0)+'</span>';
+  var on=cur===s.slot;
+  return '<article class="card song"><div class="row1">'+cov+'<div class="meta">'+
+    '<span class="no">No. '+s.no+'</span><span class="genre">'+esc(L.g[s.g])+'</span>'+(s.maul?'<span class="maulb">⚔</span>':'')+
+    '<div class="title">'+esc(s.title)+(s.subTitle?' <small>'+esc(s.subTitle)+'</small>':'')+'</div>'+
+    '<div class="who">♪ '+esc(s.artist)+'<br>✎ '+esc(s.mp)+'</div></div></div>'+
+    '<div class="stats"><span>'+L.len+' <b>'+clock(s.length)+'</b></span><span>'+L.bpm+' <b>'+Math.round(s.bpm*10)/10+'</b></span></div>'+
+    '<div class="diffs">'+diffs+'</div>'+findHtml(s)+
+    '<div class="foot"><span class="rights">'+esc(s.rights)+'</span><button class="btn play'+(on?' on':'')+'" type="button" data-slot="'+s.slot+'">'+(on?L.stop:L.play)+'</button></div></article>';
+}
+function render(){
+  var n=view.length,pages=Math.max(1,Math.ceil(n/PER));if(page>=pages)page=pages-1;
+  $('count').textContent=T[lang].count(n,all.length)+($('covers').checked?'  ・ '+t('coverWarn'):'');
+  var list=$('list');
+  if(!n){list.innerHTML='<div class="state">'+esc(t('none'))+'</div>';$('pager').hidden=true;return;}
+  list.innerHTML=view.slice(page*PER,page*PER+PER).map(card).join('');
+  $('pager').hidden=pages<=1;$('pinfo').textContent=T[lang].pinfo(page+1,pages);
+  $('prev').disabled=page<=0;$('next').disabled=page>=pages-1;
+}
+function go(d){page+=d;render();var c=document.querySelector('.controls');scrollTo({top:Math.max(0,c.offsetTop-4),behavior:'smooth'});}
+
+// ---- 試聴(押したときだけ読む) ----
+var au=$('audio');
+function stopPreview(){au.pause();au.removeAttribute('src');au.load();cur=null;$('player').classList.remove('show');render();}
+$('list').addEventListener('click',function(e){
+  var b=e.target.closest('.play');if(!b)return;
+  var slot=+b.getAttribute('data-slot');
+  if(cur===slot){stopPreview();return;}
+  var s=all.find(function(x){return x.slot===slot;});
+  cur=slot;au.src='slots/'+pad3(slot)+'/audio.mp4';
+  $('ptitle').textContent='No. '+s.no+'  '+s.title+' / '+s.artist;
+  $('player').classList.add('show');
+  var p=au.play();if(p&&p.catch)p.catch(function(err){console.warn(err);});
+  render();
+});
+$('pclose').onclick=stopPreview;
+au.addEventListener('ended',function(){cur=null;render();});
+
+// ---- 操作 ----
+var tm;$('q').addEventListener('input',function(){clearTimeout(tm);tm=setTimeout(update,220);});
+['genre','diff','sort','maul'].forEach(function(id){$(id).addEventListener('change',update);});
+$('dir').onclick=function(){dirAsc=!dirAsc;this.textContent=dirAsc?'↑':'↓';update();};
+$('covers').addEventListener('change',function(){try{localStorage.setItem('ls-covers',this.checked?'1':'0');}catch(e){}render();});
+try{if(localStorage.getItem('ls-covers')==='1')$('covers').checked=true;}catch(e){}
+$('prev').onclick=function(){go(-1);};$('next').onclick=function(){go(1);};
+$('lang').onclick=function(){lang=lang==='ja'?'en':'ja';try{localStorage.setItem('ls-lang',lang);}catch(e){}applyLang();};
+applyLang();
+load();
+})();
+</script>
+</body>
+</html>

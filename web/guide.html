@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lover's Saber 遊び方ガイド</title>
+<meta name="description" content="VRChat ワールド「Lover's Saber」の遊び方。セイバー、ミニゲーム、みんなで遊ぶゲーム、困ったとき">
+<meta name="theme-color" content="#060a1c">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#060a1c;--navy2:#121d47;--line:#22315f;--cyan:#4fe3ff;--pink:#ff5fae;--gold:#ffd27a;--text:#e8f0ff;--soft:#9fb2dc;--dim:#6f80aa;--r:14px}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:64px}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font-family:"M PLUS Rounded 1c",system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;font-size:15.5px;line-height:1.75;
+  background-image:radial-gradient(ellipse at 50% -10%,#1b2a6b 0%,rgba(6,10,28,0) 60%),radial-gradient(ellipse at 100% 100%,#2a1240 0%,rgba(6,10,28,0) 55%);background-attachment:fixed}
+#sky{position:fixed;inset:0;z-index:-1;pointer-events:none}
+a{color:var(--cyan)}
+.wrap{max-width:820px;margin:0 auto;padding:0 16px 80px}
+header{text-align:center;padding:28px 0 6px}
+.logo{font-weight:800;font-size:clamp(34px,9vw,58px);margin:0;line-height:1.1;color:#fff;text-shadow:0 0 6px var(--cyan),0 0 18px var(--cyan),0 0 36px rgba(79,227,255,.5)}
+.logo .s{text-shadow:0 0 6px var(--pink),0 0 18px var(--pink),0 0 36px rgba(255,95,174,.5)}
+.sub{margin:6px 0 0;color:var(--soft);font-weight:700}
+.pill{display:inline-flex;padding:8px 16px;border-radius:999px;border:1px solid var(--pink);color:#fff;text-decoration:none;font-weight:700;background:rgba(255,95,174,.12);box-shadow:0 0 12px rgba(255,95,174,.3);margin-top:12px}
+nav.toc{position:sticky;top:0;z-index:5;margin:14px -16px 0;padding:8px 16px;background:rgba(6,10,28,.93);border-bottom:1px solid var(--line);display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+nav.toc::-webkit-scrollbar{display:none}
+nav.toc a{flex:none;font-size:13px;font-weight:700;text-decoration:none;color:var(--text);padding:4px 11px;border-radius:999px;border:1px solid var(--line);background:var(--navy2)}
+section{margin-top:22px}
+h2{font-size:21px;margin:0 0 10px;color:#fff;display:flex;align-items:center;gap:8px}
+h2::before{content:"";width:6px;height:22px;border-radius:3px;background:linear-gradient(var(--cyan),var(--pink));box-shadow:0 0 8px var(--cyan)}
+.card{background:linear-gradient(180deg,rgba(18,29,71,.92),rgba(12,20,51,.92));border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;margin:10px 0}
+h3{margin:0 0 4px;font-size:17px;color:var(--cyan)}
+h3 .en{font-size:12px;color:var(--dim);font-weight:400;margin-left:6px}
+h4{margin:10px 0 2px;font-size:14px;color:var(--pink)}
+p{margin:4px 0}
+ul,ol{margin:4px 0;padding-left:1.3em}
+li{margin:2px 0}
+.k{display:inline-block;padding:0 7px;border-radius:6px;background:#1b2a63;border:1px solid #3a4f95;font-weight:700;color:#fff;white-space:nowrap;line-height:1.5}
+.tip{border-left:3px solid var(--gold);padding:4px 10px;margin-top:8px;background:rgba(255,210,122,.07);border-radius:0 8px 8px 0}
+.tip::before{content:"コツ ";color:var(--gold);font-weight:800}
+.note{color:var(--soft);font-size:13px}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:6px 0}
+th,td{border-bottom:1px solid var(--line);padding:5px 6px;text-align:left;vertical-align:top}
+th{color:var(--soft);font-weight:700;white-space:nowrap}
+.grid{display:grid;gap:10px}
+@media(min-width:720px){.grid{grid-template-columns:1fr 1fr}}
+.grid .card{margin:0}
+.secret{border-color:rgba(255,210,122,.6);box-shadow:0 0 18px rgba(255,210,122,.15)}
+.trouble h3{color:var(--gold)}
+footer{margin-top:30px;color:var(--dim);font-size:12px;text-align:center}
+</style>
+</head>
+<body>
+<canvas id="sky"></canvas>
+<div class="wrap">
+<header>
+  <h1 class="logo">Lover's <span class="s">Saber</span></h1>
+  <p class="sub">遊び方ガイド</p>
+  <a class="pill" href="./">← 曲さがし</a>
+</header>
+
+<nav class="toc">
+  <a href="#saber">セイバー</a><a href="#select">曲えらび</a><a href="#mods">遊び方</a><a href="#double">ダブルセイバー</a><a href="#grip">持ち方</a><a href="#arcade">ミニゲーム</a><a href="#rush">ひみつ</a><a href="#party">みんなで</a><a href="#spy">スパイ</a><a href="#trouble">困ったとき</a>
+</nav>
+
+<section id="saber">
+<h2>セイバー(曲に合わせて切る)</h2>
+<div class="card">
+  <p>流れてくる ノーツを、矢印の向きに セイバーで切る 音楽ゲームです。ロードは <b>4 つ(1P〜4P)</b>。友だちと 同じ曲を いっしょに遊べます。</p>
+  <h4>はじめ方</h4>
+  <ol>
+    <li>ロードの <span class="k">このロードで遊ぶ</span> を押して入ります(出るときは <span class="k">このロードから出る</span>)。</li>
+    <li>前の 選曲パネルで 曲を選び、<span class="k">Play</span> を押します。その曲が みんなの曲になります。</li>
+    <li>ロードにいる人は 押した時点で <b>準備完了</b>。みんながそろって 読み込みが終わると、<b>5・4・3・2・1</b> で自動で始まります。スタートのボタンは ありません。</li>
+  </ol>
+  <h4>とちゅうで止める</h4>
+  <p>演奏中に <b>ジャンプ</b> すると、みんなの曲が 一時停止します。<span class="k">再開</span> か <span class="k">停止</span> を押してね(押せるのは ロードにいる人だけ)。</p>
+  <h4>ライフ</h4>
+  <ul>
+    <li>はじめは 60%。うまく切ると 増え、ミス・ボム・壁に頭が入ると 減ります。</li>
+    <li>ふだんは <span class="k">失敗なし</span> なので、ライフが 0 になっても 続けられます。</li>
+    <li><span class="k">失敗あり</span> にすると、0 で その人だけ「ゲームオーバー」。曲は ほかの人のために続きます(記録は残りません)。</li>
+  </ul>
+  <h4>結果</h4>
+  <p>正確さで SS・S・A・B・C・D のランク。ミス 0 なら「フルコンボ!」。自己ベストは 自分のアカウントに残ります。</p>
+  <div class="tip">コンボを続けると 倍率が x2 → x4 → x8 と上がります。ミスすると 1 段下がります。</div>
+</div>
+</section>
+
+<section id="select">
+<h2>曲えらび</h2>
+<div class="card">
+  <ul>
+    <li>左の列: <span class="k">すべて</span> <span class="k">ボカロ</span> <span class="k">アニメ</span> <span class="k">J-POP</span> <span class="k">ゲーム</span> <span class="k">洋楽</span> <span class="k">★好き</span> <span class="k">プレイリスト</span> と、ダブルセイバーのアイコン。</li>
+    <li>1 ページ 6 曲。上の段の <span class="k">◀</span> <span class="k">▶</span> とページ番号、右の つまみ、リストを つかんで動かす、で さがせます。<span class="k">New</span> は 新しく入った曲の順。</li>
+    <li><span class="k">▶ 視聴</span> で 少しだけ聞けます(自分だけ)。<span class="k">おまかせ</span> は 今の一覧から 1 曲えらびます。</li>
+    <li><span class="k">☆</span> で お気に入り。<span class="k">★好き</span> に集まります。</li>
+    <li>難易度のボタンを押すと、その曲の難易度(Easy〜Expert+)が 順に変わります。<span class="k">Play</span> で みんなの難易度も決まります。</li>
+    <li><span class="k">プレイリスト</span>: BeatSaver のプレイリストの番号を打って <span class="k">読み込む</span>。このワールドにある曲だけが出ます。</li>
+  </ul>
+  <div class="tip">曲がたくさんあるので、<a href="./">曲さがしのページ</a> で「何ページの何番目か」を先に調べると 早いです。</div>
+  <p class="note">難易度が 1 つしか選べない曲は、入れかえ中です。あとで選べるようになります。</p>
+</div>
+</section>
+
+<section id="mods">
+<h2>遊び方(モディファイア)</h2>
+<div class="card">
+  <p>表と難易度のボタンのあいだの 4 つのボタン。<b>自分だけ</b> に効いて、アカウントに保存されます。選ぶと明るい青になり、右に スコアの倍率が出ます。曲の途中では 変えられません。</p>
+  <table>
+    <tr><th>ボタン</th><th>中身</th><th>スコア</th></tr>
+    <tr><td><span class="k">失敗なし</span>⇄<span class="k">失敗あり</span></td><td>ライフ 0 で終わるかどうか</td><td>そのまま</td></tr>
+    <tr><td><span class="k">矢印が消える</span></td><td>とどく少し前に 矢印が消える</td><td>+6%</td></tr>
+    <tr><td><span class="k">小さいノーツ</span></td><td>ノーツが小さくなる</td><td>+4%</td></tr>
+    <tr><td><span class="k">ノーツはやい</span></td><td>ノーツが速く近づく(曲の速さは同じ)</td><td>+8%</td></tr>
+  </table>
+  <p class="note">正確さとランクは 倍率なしで計算します。</p>
+</div>
+</section>
+
+<section id="double">
+<h2>ダブルセイバー</h2>
+<div class="card">
+  <p>左の列の <b>ダブルセイバーのアイコン</b> を押すと、両はしに刃がある セイバー 1 本で遊ぶ曲が 並びます。</p>
+  <ul>
+    <li>VR では <b>両手で 1 本</b> を持ちます。両手のあいだが 持ち手です。</li>
+    <li>ふつうは 右手側が青。設定の <span class="k">ダブルセイバーを左手で持つ</span> で 入れかえられます。</li>
+    <li>ダブルセイバーの譜面は 1 曲 1 つだけです。</li>
+  </ul>
+  <div class="tip">両手を くっつけすぎると、ふつうの 片手持ちに もどります。少し はなして持ってね。</div>
+</div>
+</section>
+
+<section id="grip">
+<h2>セイバーの持ち方(調整)</h2>
+<div class="card">
+  <p>選曲パネルの <span class="k">持ち方</span>(設定パネルにも あります)で 調整の板が開きます。</p>
+  <h4>いちばん かんたん(VR)</h4>
+  <ol>
+    <li>板が開いているときに <b>ジャンプ</b> → セイバーが手から はなれて 浮きます。</li>
+    <li>好きな にぎり方で <b>中指(グリップ)</b> でつかみます。</li>
+    <li>つかんだまま <b>人差し指(トリガー)</b> を引くと 登録。</li>
+  </ol>
+  <h4>こまかく合わせる</h4>
+  <ul>
+    <li>角度(上下・左右・ねじり)と 位置(前後・上下・左右)を ボタンで少しずつ。</li>
+    <li><span class="k">両手(鏡うつし)</span> <span class="k">右手だけ</span> <span class="k">左手だけ</span> を選べます。</li>
+    <li><span class="k">ポーズで合わせる</span>: 3 秒以内に、セイバーを まっすぐ前に向けるように持つ(VR)。</li>
+    <li><span class="k">登録する</span> でアカウントに保存。次に来たときも そのまま。<span class="k">固定する</span> で 動かなくなります。</li>
+  </ul>
+  <p class="note">曲が始まると 板は自動で閉じます。演奏中のジャンプは 一時停止になります。</p>
+</div>
+</section>
+
+<section id="arcade">
+<h2>ミニゲーム機(ひとりで遊ぶ)</h2>
+<div class="card">
+  <h4>はじめ方</h4>
+  <p>ラウンジの ミニゲーム機の いすに座ります(<span class="k">1P で遊ぶ</span>)。<b>ジャンプ</b> で おります。</p>
+  <table>
+    <tr><th></th><th>VR</th><th>デスクトップ</th></tr>
+    <tr><td>ゲームをえらぶ</td><td>スティック 左右</td><td>A / D</td></tr>
+    <tr><td>むずかしさ</td><td>スティック 上下</td><td>W / S</td></tr>
+    <tr><td>スタート</td><td>トリガー</td><td>クリック</td></tr>
+    <tr><td>正面にもどる</td><td>—</td><td>R</td></tr>
+  </table>
+  <p>むずかしさは <span class="k">かんたん</span> <span class="k">ふつう</span> <span class="k">むずかしい</span>。結果は C〜SS のランク。<b>今日のランキング</b>(ラン と サバイバー)は となりの板に出ます。</p>
+</div>
+<div class="grid">
+  <div class="card"><h3>ノーツくんラン<span class="en">NOTE-KUN RUN</span></h3>
+    <p>左右に動いて、青い門で なかまを増やして進みます。ゲージがたまったら トリガーで <b>ノーツビーム</b>。3 ステージ、最後の キングを たおすとクリア。</p>
+    <div class="tip">動くすき間のある 光の柵は、すき間の場所を よく見てね。</div></div>
+  <div class="card"><h3>ノーツくんサバイバー<span class="en">NOTE-KUN SURVIVOR</span></h3>
+    <p>WASD / スティックで動くだけ。攻撃は自動です。宝石を集めて レベルアップ → カードを選んで 強くなります。2 分 30 秒で キング登場、たおすとクリア。</p>
+    <div class="tip">トリガーで <b>ダッシュ</b>。ダッシュ中は 当たりません。【のろい】のカードには 気をつけて。</div></div>
+  <div class="card"><h3>ノーツくんスラッシュ<span class="en">NOTE-KUN SLASH</span></h3>
+    <p>ノーツくんが 前の線に来たら、矢印の向きに スティックを はじきます(デスクトップは WASD、ななめは 2 つ同時)。決まった数を切ると クリア。</p>
+    <div class="tip">ブラックは 切らずに 見送ります。金のノーツは 2 回切ります。</div></div>
+  <div class="card"><h3>ミスタースターの星つなぎ<span class="en">MR. STAR LINK</span></h3>
+    <p>左右で 列をえらんで 落とし、同じ色を 3 つそろえて 消します。下に倒すと 速く落ち、トリガーで すぐ落ちます。決まった数を 消すとクリア。</p>
+    <div class="tip">NEXT を見て 先を考えよう。下から せり上がる ブラックに注意。</div></div>
+  <div class="card"><h3>ノーツくんブレイカー<span class="en">NOTE-KUN BREAKER</span></h3>
+    <p>トリガーで ボールを打ち出して、ブロックを こわします。最後のステージは ボスの ブラックキング。</p>
+    <div class="tip">セイバーの はしで当てると 角度が変わります。暗いカプセル(ちぢむ・はやい)は 取らないで。</div></div>
+  <div class="card"><h3>ノーツくんタワー<span class="en">NOTE-KUN TOWER</span></h3>
+    <p>ゆれる ブロックを トリガーで落として 積みます。はみ出した所は 切れます。決まった階まで 積むとクリア。</p>
+    <div class="tip">風・氷・ブラックに注意。星にふれると ボーナス。</div></div>
+  <div class="card"><h3>ミスタースターをまもれ<span class="en">DEFEND MR. STAR</span></h3>
+    <p>スティックで ねらって、トリガーで撃ちます。長押しで <b>チャージショット</b>。ボスを たおすとクリア(ふつう・むずかしいは その先も)。</p>
+    <div class="tip">盾を持つ ブラックや ワープする敵が 出てきます。ミスタースターに 近づけないでね。</div></div>
+  <div class="card"><h3>ノーツくんの星づり<span class="en">NOTE-KUN STAR FISHING</span></h3>
+    <p>スティックで 浮きを動かして 待ちます。「!」が出たら トリガー。長押しで 巻いて、<b>魚が赤く光ったら はなす</b>。夜明け(2 分)まで 釣ります。</p>
+    <div class="tip">白く光ったら つかれているので 一気に巻こう。ブラックノーツくんは エサを食べちゃいます。</div></div>
+</div>
+</section>
+
+<section id="rush">
+<h2>★ ひみつ: オールスターラッシュ</h2>
+<div class="card secret">
+  <p>ミニゲーム機には、<b>かくれたメニュー</b> があります。</p>
+  <p><b>ヒント:</b> ひとりで遊ぶ ゲームを、とことん 極めてみよう。すると「★ ひみつ ★」が あらわれます。</p>
+  <p>ラッシュは 1 曲(約 1 分 40 秒)のあいだ、ミニゲームの名場面が 次々に続く 特別なステージです。ワールド全体が 暗くなり、そのあいだは みんな セイバーで遊べません。始める前に 確認が出ます。</p>
+  <p>最後には <b>ボス「クロスビート」</b> が待っています。ボス戦では 攻撃できません。スティックで動いて、曲の終わりまで よけきれば 勝ち。トリガーを押すと ゆっくり動けます。</p>
+  <div class="tip">弾の すぐ近くを かすめると「グレイズ」。でも当たると ハートが減ります。ハートは みんなで共通です。</div>
+</div>
+</section>
+
+<section id="party">
+<h2>みんなで遊ぶ(ミニゲーム機で 4 人)</h2>
+<div class="card">
+  <p>ミニゲーム機 2 台 × いす 2 つ = <b>4 人</b>。どの席でも 同じ「みんなで遊ぶ」カードを えらんでね。みんながトリガーを押すと すぐ始まり、25 秒たっても始まります。空いた席は CPU が入ります。</p>
+</div>
+<div class="grid">
+  <div class="card"><h3>星の迷宮<span class="en">LABYRINTH OF STARS</span></h3>
+    <p><b>1 対 3</b>。迷宮の主 と、ソード・シールド・スター の 3 人の たんけん隊。毎回 ちがう迷宮です。</p>
+    <ul><li>たんけん隊: 1 ターンに 3 マスまで動いて、攻撃・技・なかまを起こす。だれか 1 人が 奥の 金のノーツくんの所まで行けば 勝ち。</li>
+    <li>迷宮の主: はじめに モンスターと わなを置きます。たんけん隊が みんな ねむるか、夜明けまで 守れば 勝ち。</li>
+    <li>主に なりたい人は、募集中に スティックを上に。</li></ul>
+    <p class="note">操作: スティックでカーソル、トリガーで決定。青 = 移動、赤 = 攻撃、緑 = 起こす。</p></div>
+  <div class="card"><h3>夜空のよつどもえ将棋<span class="en">NIGHT SKY 4-WAY SHOGI</span></h3>
+    <p><b>4 人で勝負</b>。赤・青・金・影 の 4 つの国が、それぞれの <b>一番星</b> を守ります。コマは 毎回 ランダムに 5 つ。</p>
+    <ul><li>1 ターンに 1 歩うごくか、<span class="k">★技</span> を使います。青 = 移動、金 = 技、赤 = 取る。</li>
+    <li>一番星を取られたら おしまい。最後の 1 国か、60 ターンで いちばん点の多い国が 勝ち。</li>
+    <li>まん中の「星の広場」にいると 点が入ります。</li></ul></div>
+</div>
+</section>
+
+<section id="spy">
+<h2>夜空のスパイをさがせ(4 人の話し合い)</h2>
+<div class="card">
+  <p>右のデッキから 橋をわたった先の 浮き島。丸いテーブルの いすに座ると 参加。空いた席は CPU が入ります。手元の タブレットに、自分だけの 役やお題が 出ます。</p>
+  <h4>作戦モード</h4>
+  <p>4 人のうち 1 人が スパイ。リーダーが チームを えらび、みんなで 賛成・反対。チームの人は こっそり <span class="k">成功</span> か <span class="k">失敗</span>(失敗を出せるのは スパイだけ)。2 回失敗で スパイの勝ち。2 回成功したら 最後に だれがスパイか 投票します。</p>
+  <h4>お題モード</h4>
+  <p>1 人だけ 少しちがうお題を もらいます(本人は 知りません)。ヒントのカードを 2 回出して、話し合って 投票。見つかっても、みんなのお題を 当てれば 逆転できます。</p>
+  <div class="tip">ルールを忘れたら タブレットの <span class="k">あそびかた</span>。</div>
+</div>
+</section>
+
+<section id="trouble" class="trouble">
+<h2>困ったとき</h2>
+<div class="card">
+  <h3>曲が流れない・音が出ない</h3>
+  <p>曲は 外のサイトから 読み込みます。VRChat の設定で <b>「Allow Untrusted URLs(信頼されていない URL を許可)」</b> を オンにしてね。回線や PC が遅いと、同期が ずれることがあります。</p>
+</div>
+<div class="card">
+  <h3>音が大きい・小さい</h3>
+  <ul>
+    <li>選曲パネルの <span class="k">設定</span>(歯車): <b>曲のボリューム</b> と <b>効果音のボリューム</b>。</li>
+    <li>入口の板: <b>Music Volume(見ているとき)</b> と <b>SE Volume(見ているとき)</b>。ロードに入っていないとき用です。</li>
+    <li>入口の板の <span class="k">SAVE</span> で 設定を アカウントに保存できます。</li>
+  </ul>
+</div>
+<div class="card">
+  <h3>セイバーの にぎり方が へん</h3>
+  <p><span class="k">持ち方</span> の板を開いて <b>ジャンプ</b> → セイバーが手から はなれます。好きな にぎり方で <b>中指</b> でつかみなおし、<b>人差し指</b> で登録。(演奏中のジャンプは 一時停止になるので、曲が終わってからね)</p>
+</div>
+<div class="card">
+  <h3>ノーツと音が ずれる</h3>
+  <p>入口の板の <span class="k">Run Calibration 補正を始める</span>。12 回の音に合わせて トリガー(デスクトップはクリック)を押すと、判定のタイミングが 合います。</p>
+</div>
+<div class="card">
+  <h3>ロードに入れない</h3>
+  <p>「使用中」のロードは ほかの人が遊んでいます。4 つとも使われていたら 少し待ってね。オールスターラッシュ中は セイバーを始められません。</p>
+</div>
+</section>
+
+<footer>
+  <p>曲と譜面は <a href="https://beatsaver.com/" target="_blank" rel="noopener">BeatSaver</a> から。マッパーのみなさん、アーティストのみなさんに 感謝します。</p>
+  <p><a href="./">← 曲さがし</a></p>
+</footer>
+</div>
+<script>
+(function(){
+function drawSky(){var c=document.getElementById('sky'),dpr=Math.min(window.devicePixelRatio||1,2),w=innerWidth,h=innerHeight;
+  c.width=w*dpr;c.height=h*dpr;c.style.width=w+'px';c.style.height=h+'px';var g=c.getContext('2d');g.scale(dpr,dpr);
+  var n=Math.round(w*h/2600),seed=11;function r(){seed=(seed*16807)%2147483647;return seed/2147483647;}
+  for(var i=0;i<n;i++){var x=r()*w,y=r()*h,s=r()*1.3+.2,a=r()*.7+.2,p=r();g.fillStyle=p<.12?'rgba(255,150,210,'+a+')':p<.3?'rgba(140,230,255,'+a+')':'rgba(255,255,255,'+a+')';g.beginPath();g.arc(x,y,s,0,7);g.fill();}}
+drawSky();var t;addEventListener('resize',function(){clearTimeout(t);t=setTimeout(drawSky,300);});
+})();
+</script>
+</body>
+</html>
