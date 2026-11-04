@@ -11,5 +11,6 @@
   "difficulty": "Expert",
   "audioBitrate": "80k",
   "maxMinutes": 200,
-  "maxFiles": 19000
+  "maxFiles": 19000,
+  "curatedFirst": 3000
 }

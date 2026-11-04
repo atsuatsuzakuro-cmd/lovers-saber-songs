@@ -88,7 +88,14 @@ function pickMaul(diffs, want) {
 async function collectMaps() {
   const maps = [];
   const seen = new Set();
-  const add = (m) => { if (m && !seen.has(m.id) && maps.length < cfg.maxSongs) { seen.add(m.id); maps.push(m); } };
+  // 自動で作った譜面(BeatSaver の automapper の印や、AI で作ったという申告があるもの)は、どこから来ても入れない
+  let aiSkipped = 0, modSkipped = 0;
+  const isAi = (m) => m.automapper === true || (m.declaredAi && m.declaredAi !== 'None');
+  // 特別な改造(Noodle Extensions・Mapping Extensions)がないと遊べない譜面と、壁だけの譜面も、ワールドではこわれるので入れない
+  const needsMod = (m) => { const v = (m.versions ?? []).find((x) => x.state === 'Published') ?? m.versions?.[0]; const std = (v?.diffs ?? []).filter((d) => d.characteristic === 'Standard'); return std.length > 0 && std.every((d) => d.ne || d.me); };
+  const wallOnly = (m) => /wall ?map/i.test(m.name ?? '');
+  const add = (m) => { if (m && !seen.has(m.id) && maps.length < cfg.maxSongs) { seen.add(m.id); if (isAi(m)) { aiSkipped++; log(`  自動で作った譜面なので入れません: ${m.name}(BeatSaver ${m.id})`); return; }
+    if (needsMod(m) || wallOnly(m)) { modSkipped++; return; } maps.push(m); } };
   // いちばん先に入れる曲(うどんセイバーの曲など。BeatSaver の番号の一覧のファイル)。この曲は置き場に入りきらなくても減らさない
   for (const f of cfg.priorityIdFiles ?? []) {
     const j = JSON.parse(readFileSync(join(import.meta.dirname, f), 'utf8'));
@@ -114,6 +121,17 @@ async function collectMaps() {
   const fileRoom = Math.floor(((cfg.maxFiles ?? 19000) - 40) / 2);   // ダブルセイバー用の譜面(数十〜数百)は、maxFiles と Cloudflare の上限 20000 のすき間に入る
   const goal = Math.min(cfg.maxSongs, fileRoom, maps.length + (cfg.topRated ?? 0));
   if (maps.length + (cfg.topRated ?? 0) > goal) log(`置き場に入りきらないので、評価順の曲を ${maps.length + (cfg.topRated ?? 0) - goal} 曲減らします`);
+  // まず、BeatSaver の運営が選んだ譜面(キュレーション)を評価の高い順に curatedFirst 曲まで入れる(雑な譜面が少ない)
+  const curGoal = Math.min(goal, maps.length + (cfg.curatedFirst ?? 0));
+  for (let page = 0; maps.length < curGoal && page < 200; page++) {
+    let j;
+    try { j = await getJson(`https://api.beatsaver.com/search/text/${page}?sortOrder=Rating&curated=true&pageSize=100`); }
+    catch (e) { log(`キュレーションの ${page + 1} ページ目を読めませんでした(${e.message})。評価順に進みます`); break; }
+    await new Promise((res) => setTimeout(res, 300));
+    if (!(j.docs ?? []).length) break;
+    for (const m of j.docs) if (maps.length < curGoal) add(m);
+  }
+  log(`キュレーションの曲まで: いま ${maps.length} 曲`);
   for (let page = 0; maps.length < goal && page < 200; page++) {
     let j;
     try { j = await getJson(`https://api.beatsaver.com/search/text/${page}?sortOrder=Rating&pageSize=100`); }
@@ -122,6 +140,7 @@ async function collectMaps() {
     if (!(j.docs ?? []).length) break;
     for (const m of j.docs) if (maps.length < goal) add(m);
   }
+  log(`自動で作った譜面なので入れなかった曲: ${aiSkipped} 曲。改造が要る譜面・壁だけの譜面で入れなかった曲: ${modSkipped} 曲`);
   return maps;
 }
 
@@ -165,7 +184,7 @@ async function main() {
     const entry = {
       slot: p.slot, title: md.songName ?? m.name, subTitle: md.songSubName ?? '', artist: md.songAuthorName ?? '', mappers: [md.levelAuthorName ?? m.uploader?.name ?? ''],
       characteristic: 'Standard', difficulty: d.difficulty, songId: `bsr:${m.id}`, mapHash: ver.hash, chartKey: `bsr:${m.id}|${ver.hash}|Standard|${d.difficulty}`,
-      noteCount: d.notes ?? 0, bpm: md.bpm ?? 0, length: md.duration ?? 0, genre: genreFromTags(m.tags), cover: false, rights: `BeatSaver ${m.id}(${m.uploader?.name ?? ''} さん)`,
+      noteCount: d.notes ?? 0, bpm: md.bpm ?? 0, length: md.duration ?? 0, genre: genreFromTags(m.tags), cover: false, curated: !!m.curator, rights: `BeatSaver ${m.id}(${m.uploader?.name ?? ''} さん)`,
     };
     if (mDiff) entry.maul = { characteristic: mDiff.characteristic, difficulty: mDiff.difficulty, label: mDiff.label ?? '', noteCount: mDiff.notes ?? 0, chartKey: `bsr:${m.id}|${ver.hash}|${mDiff.characteristic}|${mDiff.difficulty}` };
     // 前回と同じ版・同じ難易度なら、前回のファイルを取り直す
