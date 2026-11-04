@@ -184,7 +184,7 @@ async function main() {
     const entry = {
       slot: p.slot, title: md.songName ?? m.name, subTitle: md.songSubName ?? '', artist: md.songAuthorName ?? '', mappers: [md.levelAuthorName ?? m.uploader?.name ?? ''],
       characteristic: 'Standard', difficulty: d.difficulty, songId: `bsr:${m.id}`, mapHash: ver.hash, chartKey: `bsr:${m.id}|${ver.hash}|Standard|${d.difficulty}`,
-      noteCount: d.notes ?? 0, bpm: md.bpm ?? 0, length: md.duration ?? 0, genre: genreFromTags(m.tags), cover: false, curated: !!m.curator, rights: `BeatSaver ${m.id}(${m.uploader?.name ?? ''} さん)`,
+      noteCount: d.notes ?? 0, bpm: md.bpm ?? 0, length: md.duration ?? 0, genre: genreFromTags(m.tags), cover: false, curated: !!m.curator, ranked: !!(m.ranked || m.blRanked), rights: `BeatSaver ${m.id}(${m.uploader?.name ?? ''} さん)`,
     };
     if (mDiff) entry.maul = { characteristic: mDiff.characteristic, difficulty: mDiff.difficulty, label: mDiff.label ?? '', noteCount: mDiff.notes ?? 0, chartKey: `bsr:${m.id}|${ver.hash}|${mDiff.characteristic}|${mDiff.difficulty}` };
     // 前回と同じ版・同じ難易度なら、前回のファイルを取り直す
