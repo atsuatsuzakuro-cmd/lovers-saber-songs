@@ -13,6 +13,7 @@
 //   node convert.mjs 譜面.zip --list                      … 収録されている難易度を表示
 //   node convert.mjs --bsr abcd --slot 2 --char NoArrows --diff Expert --chart-name maul.json --chart-only
 //                                                          … 譜面だけを別の名前で書き出す(音・ジャケット・一覧は作らない。ダブルセイバー用の譜面など)
+//   --all-diffs  … ほかの難易度も chart.json の "diffs" に入れる(ワールドで難易度を選べるように)
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, relative, resolve } from 'node:path';
@@ -132,6 +133,22 @@ async function main() {
   chart.slot = slot;
   chart.rights = a.rights || '';
   if (beatsaver) chart.beatsaver = beatsaver;
+  // --all-diffs: ほかの難易度(Standard で、ダブルセイバー用でないもの)も、同じファイルの "diffs" に入れる。
+  // いちばん上の譜面(--diff で選んだもの)はそのまま(前のワールドは、いちばん上だけを読む)。ファイルの数は増えない
+  if (a['all-diffs']) {
+    const isMaulLabel = (d) => /maul|darth|double ?saber|(^|[^a-z])dm([^a-z]|$)/i.test(d.customData?._difficultyLabel ?? d.customData?.difficultyLabel ?? '');
+    chart.diffs = [];
+    for (const d of readInfo(files).difficulties) {
+      if (d.characteristic !== 'Standard' || d.difficulty === chart.difficulty || isMaulLabel(d)) continue;
+      if (chart.diffs.some((x) => x.difficulty === d.difficulty)) continue;
+      try {
+        const c = convertMap(files, { characteristic: 'Standard', difficulty: d.difficulty, songId, mapHash });
+        chart.diffs.push({ difficulty: c.difficulty, chartKey: c.chartKey, njs: c.njs, spawnAhead: c.spawnAhead, lastObjectTime: c.lastObjectTime, counts: c.counts, notes: c.notes, bombs: c.bombs, walls: c.walls });
+      } catch (e) { console.warn(`  注意: ${d.difficulty} を変換できませんでした(${e.message})`); }
+    }
+    const order = ['Easy', 'Normal', 'Hard', 'Expert', 'ExpertPlus'];
+    chart.diffs.sort((x, y) => order.indexOf(x.difficulty) - order.indexOf(y.difficulty));
+  }
   const { _source, ...publicChart } = chart;
   writeFileSync(join(slotDir, a['chart-name'] || 'chart.json'), JSON.stringify(publicChart));
   if (a['chart-only']) {

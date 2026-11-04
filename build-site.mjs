@@ -5,7 +5,8 @@
 //   playlists   … 入れる BeatSaver のプレイリストの番号(先に書いたものから順に入れる)
 //   topRated    … プレイリストのあとに足す、BeatSaver の評価の高い順の曲の数
 //   maxSongs    … 入れる曲のいちばん多い数(ワールドに埋め込んだスロット数 - 1 以下)
-//   difficulty  … 遊ぶ難易度(なければ、それより下でいちばん難しいもの)
+//   difficulty  … いちばん上に置く(はじめに選ばれている)難易度(なければ、それより下でいちばん難しいもの)。
+//                 ほかの難易度も chart.json の "diffs" に入れ、一覧の "diffs" に選べる難易度を書く(ワールドで選べる)
 //   audioBitrate… 音の質(80k なら 1 曲 1.5MB ほど)
 //
 // ダブルセイバー(ダース・モール)用の譜面: BeatSaver には専用の種類がなく、作者が難易度の名前に
@@ -149,7 +150,7 @@ async function main() {
   const slots = [JSON.parse(readFileSync(join(out, 'catalog.json'), 'utf8')).slots.find((s) => s.slot === 0)];
   slots[0].title = '同期テスト クリック';
 
-  let reused = 0, made = 0, failed = 0, later = 0, maulCount = 0;
+  let reused = 0, made = 0, failed = 0, later = 0, maulCount = 0, upgraded = 0;
   const started = Date.now();
   const budgetMs = (cfg.maxMinutes ?? 300) * 60000;   // GitHub Actions は 1 回 6 時間まで。新しい曲を変えるのは、この時間まで(残りは次の回)
   for (const p of plan) {
@@ -178,13 +179,27 @@ async function main() {
         }
         ok = true; reused++;
       } catch {}
+      // 前の形(難易度が 1 つだけ)の譜面なら、時間が残っているうちに、譜面だけ「全部の難易度入り」に作り直す(音は作らないので速い)。
+      // 作り直せなかった曲は、前の譜面のまま置き、次の回にまた試す
+      if (ok && !p.prev.diffs && Date.now() - started <= budgetMs && !lowSpace()) {
+        const r = spawnSync(process.execPath, [join(import.meta.dirname, 'convert.mjs'), '--bsr', m.id, '--slot', String(p.slot), '--diff', d.difficulty, '--chart-only', '--all-diffs', '--out', out, '--rights', entry.rights], { stdio: 'ignore' });
+        if (r.status === 0) upgraded++;
+      }
     }
     if (!ok && (Date.now() - started > budgetMs || lowSpace())) { later++; rmSync(dir, { recursive: true, force: true }); continue; }
     if (!ok) {
-      const r = spawnSync(process.execPath, [join(import.meta.dirname, 'convert.mjs'), '--bsr', m.id, '--slot', String(p.slot), '--diff', d.difficulty, '--out', out, '--no-atlas', '--abr', cfg.audioBitrate, '--genre', entry.genre, '--rights', entry.rights], { stdio: 'ignore' });
+      const r = spawnSync(process.execPath, [join(import.meta.dirname, 'convert.mjs'), '--bsr', m.id, '--slot', String(p.slot), '--diff', d.difficulty, '--all-diffs', '--out', out, '--no-atlas', '--abr', cfg.audioBitrate, '--genre', entry.genre, '--rights', entry.rights], { stdio: 'ignore' });
       ok = r.status === 0 && existsSync(join(dir, 'chart.json')) && existsSync(join(dir, 'audio.mp4'));
       if (ok) made++; else { failed++; dropZips(); rmSync(dir, { recursive: true, force: true }); log(`  とばしました: ${entry.title}(BeatSaver ${m.id})`); continue; }
     }
+    // 一覧に、選べる難易度(いちばん上の譜面と "diffs" の分)を書く。前の形の譜面のままなら書かない(次の回に作り直す印)
+    try {
+      const ch = JSON.parse(readFileSync(join(dir, 'chart.json'), 'utf8'));
+      if (Array.isArray(ch.diffs)) {
+        entry.diffs = [{ difficulty: ch.difficulty, noteCount: ch.counts?.notes ?? 0, chartKey: ch.chartKey }, ...ch.diffs.map((x) => ({ difficulty: x.difficulty, noteCount: x.counts?.notes ?? 0, chartKey: x.chartKey }))];
+        entry.diffs.sort((x, y) => DiffOrder.indexOf(x.difficulty) - DiffOrder.indexOf(y.difficulty));
+      }
+    } catch {}
     // ジャケット(まとめ画像を作るためだけに使う。置き場には置かない)
     try {
       const r = await fetch(ver.coverURL, UA);
@@ -218,7 +233,7 @@ async function main() {
   for (const s of slots) for (const f of ['cover.jpg', 'cover.png']) { const p = join(slotDir(s.slot), f); if (existsSync(p)) unlinkSync(p); }
   writeFileSync(join(out, 'catalog.json'), JSON.stringify(cat));
   writeFileSync(join(out, '_headers'), '/*\n  Access-Control-Allow-Origin: *\n  Cache-Control: public, max-age=300\n');
-  log(`できました: ${slots.length - 1} 曲(使い回し ${reused} / 新しく ${made} / とばした ${failed} / 次の回へ ${later})。ダブルセイバー用の譜面がある曲: ${maulCount} 曲`);
+  log(`できました: ${slots.length - 1} 曲(使い回し ${reused} / 新しく ${made} / とばした ${failed} / 次の回へ ${later})。ダブルセイバー用の譜面がある曲: ${maulCount} 曲。全部の難易度入りに作り直した曲: ${upgraded} 曲(選べる曲 ${slots.filter((s) => s.diffs).length} 曲)`);
 }
 
 main().catch((e) => { console.error(`エラー: ${e.message}`); process.exit(1); });
