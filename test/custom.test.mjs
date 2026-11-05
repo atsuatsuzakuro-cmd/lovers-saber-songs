@@ -71,3 +71,11 @@ test('前回と同じ譜面(customKey が同じ)なら、前回置いたファ�
   assert.equal(readFileSync(join(out, 'slots', '007', 'audio.mp4'), 'utf8'), 'MP4');
   assert.ok(!asked.some(u => u.includes('beatsaver')));
 });
+
+test('ZIP の中が小文字の info.dat でも、らばーず譜面の Info.dat に置きかわる(大文字小文字を区別する Linux でも)', () => {
+  const files = new Map([['info.dat', Buffer.from('{"_levelAuthorName":"元の作者"}')], ['sub/Expert.dat', Buffer.from('{}')], ['song.egg', Buffer.from('OGG')]]);
+  const out = overlayCustom(files, customDir());
+  const infos = [...out.keys()].filter(k => k.split('/').pop().toLowerCase() === 'info.dat');
+  assert.deepEqual(infos, ['Info.dat']);
+  assert.match(out.get('Info.dat').toString(), /らばーず譜面/);
+});
