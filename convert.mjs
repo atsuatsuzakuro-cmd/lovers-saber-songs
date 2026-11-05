@@ -134,15 +134,17 @@ async function main() {
   chart.rights = a.rights || '';
   if (beatsaver) chart.beatsaver = beatsaver;
   // --all-diffs: ほかの難易度(Standard で、ダブルセイバー用でないもの)も、同じファイルの "diffs" に入れる。
+  // --char で Standard 以外(らばーず譜面のダブルセイバー用 Lawless など)を選んだときは、その種類の難易度を全部入れる。
   // いちばん上の譜面(--diff で選んだもの)はそのまま(前のワールドは、いちばん上だけを読む)。ファイルの数は増えない
   if (a['all-diffs']) {
     const isMaulLabel = (d) => /maul|darth|double ?saber|(^|[^a-z])dm([^a-z]|$)/i.test(d.customData?._difficultyLabel ?? d.customData?.difficultyLabel ?? '');
     chart.diffs = [];
+    const ch = a.char || 'Standard';
     for (const d of readInfo(files).difficulties) {
-      if (d.characteristic !== 'Standard' || d.difficulty === chart.difficulty || isMaulLabel(d)) continue;
+      if (d.characteristic !== ch || d.difficulty === chart.difficulty || (ch === 'Standard' && isMaulLabel(d))) continue;
       if (chart.diffs.some((x) => x.difficulty === d.difficulty)) continue;
       try {
-        const c = convertMap(files, { characteristic: 'Standard', difficulty: d.difficulty, songId, mapHash });
+        const c = convertMap(files, { characteristic: ch, difficulty: d.difficulty, songId, mapHash });
         chart.diffs.push({ difficulty: c.difficulty, chartKey: c.chartKey, njs: c.njs, spawnAhead: c.spawnAhead, lastObjectTime: c.lastObjectTime, counts: c.counts, notes: c.notes, bombs: c.bombs, walls: c.walls });
       } catch (e) { console.warn(`  注意: ${d.difficulty} を変換できませんでした(${e.message})`); }
     }

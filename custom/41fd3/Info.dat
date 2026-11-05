@@ -42,6 +42,41 @@
      "_noteJumpStartBeatOffset": -0.25
     }
    ]
+  },
+  {
+   "_beatmapCharacteristicName": "Lawless",
+   "_difficultyBeatmaps": [
+    {
+     "_difficulty": "Easy",
+     "_difficultyRank": 1,
+     "_beatmapFilename": "EasyLawless.dat",
+     "_noteJumpMovementSpeed": 10,
+     "_noteJumpStartBeatOffset": 0,
+     "_customData": {
+      "_difficultyLabel": "Double Saber"
+     }
+    },
+    {
+     "_difficulty": "Normal",
+     "_difficultyRank": 3,
+     "_beatmapFilename": "NormalLawless.dat",
+     "_noteJumpMovementSpeed": 10,
+     "_noteJumpStartBeatOffset": 0,
+     "_customData": {
+      "_difficultyLabel": "Double Saber"
+     }
+    },
+    {
+     "_difficulty": "Hard",
+     "_difficultyRank": 5,
+     "_beatmapFilename": "HardLawless.dat",
+     "_noteJumpMovementSpeed": 12,
+     "_noteJumpStartBeatOffset": 0,
+     "_customData": {
+      "_difficultyLabel": "Double Saber"
+     }
+    }
+   ]
   }
  ]
 }

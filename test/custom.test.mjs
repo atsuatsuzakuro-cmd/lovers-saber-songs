@@ -79,3 +79,12 @@ test('ZIP の中が小文字の info.dat でも、らばーず譜面の Info.dat
   assert.deepEqual(infos, ['Info.dat']);
   assert.match(out.get('Info.dat').toString(), /らばーず譜面/);
 });
+
+test('ダブルセイバーの maul.json から、一覧の "maul"(選べる難易度つき)を作る', async () => {
+  const { maulEntry } = await import('../lib/custom.mjs');
+  const m = { characteristic: 'Lawless', difficulty: 'Normal', chartKey: 'k-n', counts: { notes: 60 }, diffs: [{ difficulty: 'Hard', chartKey: 'k-h', counts: { notes: 90 } }, { difficulty: 'Easy', chartKey: 'k-e', counts: { notes: 30 } }] };
+  assert.deepEqual(maulEntry(m), {
+    characteristic: 'Lawless', difficulty: 'Normal', label: 'Double Saber', noteCount: 60, chartKey: 'k-n',
+    diffs: [{ difficulty: 'Easy', noteCount: 30, chartKey: 'k-e' }, { difficulty: 'Normal', noteCount: 60, chartKey: 'k-n' }, { difficulty: 'Hard', noteCount: 90, chartKey: 'k-h' }],
+  });
+});
