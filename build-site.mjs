@@ -15,6 +15,7 @@
 //
 // 同じ曲は、前回と同じスロットに置く(遊んでいる途中の人の曲が入れ替わらないように)。
 // 前回と同じ曲・同じ版は、前回のファイルを取り直して使い、新しい曲だけ BeatSaver から取ってきて変える
+import { listCustom, buildCustom } from './lib/custom.mjs';
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync, copyFileSync, unlinkSync, statfsSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -153,15 +154,23 @@ async function main() {
   if (siteUrl.startsWith('http')) { try { prev = await getJson(siteUrl + 'catalog.json'); log(`前回の一覧: ${prev.slots.length} 曲`); } catch { log('前回の一覧はありません(初めて)'); } }
   const prevById = new Map(prev.slots.filter((s) => s.songId?.startsWith('bsr:')).map((s) => [s.songId.slice(4), s]));
 
-  const maps = await collectMaps();
-  log(`入れる曲: ${maps.length} 曲`);
+  // --custom-only: らばーず譜面だけを作る(手元で確かめる用)
+  const maps = args.includes('--custom-only') ? [] : await collectMaps();
+  // らばーず譜面(custom/<番号>/)。入りきらないときは、BeatSaver の曲(優先度の低い後ろのほう)を減らす
+  const customRoot = join(import.meta.dirname, 'custom');
+  const customIds = listCustom(customRoot);
+  if (customIds.length && maps.length + customIds.length > cfg.maxSongs) { maps.length = Math.max(0, cfg.maxSongs - customIds.length); log(`らばーず譜面 ${customIds.length} 曲のぶん、BeatSaver の曲を減らしました`); }
+  log(`入れる曲: ${maps.length} 曲 + らばーず譜面 ${customIds.length} 曲`);
 
   // スロットを決める: 前回と同じ曲は同じスロット、新しい曲は空いているスロット(0 は同期テスト)
   const used = new Set([0]);
   const plan = [];
   for (const m of maps) { const p = prevById.get(m.id); if (p && !used.has(p.slot)) { used.add(p.slot); plan.push({ m, slot: p.slot, prev: p }); } else plan.push({ m, slot: -1 }); }
+  const prevCustom = new Map(prev.slots.filter((s) => s.songId?.startsWith('lovers:')).map((s) => [s.songId.slice(7), s.slot]));
+  const customPlan = customIds.map((id) => { const ps = prevCustom.get(id); if (ps !== undefined && !used.has(ps)) { used.add(ps); return { id, slot: ps }; } return { id, slot: -1 }; });
   let next = 1;
   for (const p of plan) if (p.slot < 0) { while (used.has(next)) next++; p.slot = next; used.add(next); }
+  for (const p of customPlan) if (p.slot < 0) { while (used.has(next)) next++; p.slot = next; used.add(next); }
 
   // スロット 0: 同期テスト(自作のクリック音)
   const r0 = spawnSync(process.execPath, [join(import.meta.dirname, 'convert.mjs'), join(import.meta.dirname, 'testmaps', 'synctest-v3.zip'), '--slot', '0', '--out', out, '--no-atlas', '--abr', cfg.audioBitrate, '--rights', '自作クリック音・自作譜面', '--genre', 'other'], { stdio: 'inherit' });
@@ -244,6 +253,13 @@ async function main() {
     slots.push(entry);
     if ((reused + made) % 50 === 0) log(`  ${reused + made} 曲(使い回し ${reused} / 新しく ${made})・空き ${freeGB()}GB`);
   }
+  // らばーず譜面(音は BeatSaver の ZIP から。取れない曲は、とばして記録する)
+  let customMade = 0;
+  for (const p of customPlan) {
+    const entry = await buildCustom(p.id, { customRoot, out, slot: p.slot, abr: cfg.audioBitrate, genreFromTags, log });
+    if (entry) { slots.push(entry); customMade++; }
+  }
+  if (customPlan.length) log(`らばーず譜面: ${customMade} / ${customPlan.length} 曲`);
   slots.sort((x, y) => x.slot - y.slot);
   const total = (await getJson('https://api.beatsaver.com/search/text/0?pageSize=1')).info?.total ?? 0;
   const cat = { format: 'vrsaber-catalog', formatVersion: 1, source: 'beatsaver', total, slots };

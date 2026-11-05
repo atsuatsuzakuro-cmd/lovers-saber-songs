@@ -337,7 +337,7 @@ function card(s){
   if(s.maul)diffs+='<span class="d Maul">⚔ '+esc(L.maul)+' '+esc(DL[s.maul.difficulty]||s.maul.difficulty)+' '+(s.maul.noteCount||0)+'</span>';
   var on=cur===s.slot;
   return '<article class="card song"><div class="row1">'+cov+'<div class="meta">'+
-    '<span class="no">No. '+s.no+'</span><span class="genre">'+esc(L.g[s.g])+'</span>'+(s.maul?'<span class="maulb">⚔</span>':'')+(s.ranked?'<span class="maulb">RANK</span>':'')+
+    '<span class="no">No. '+s.no+'</span><span class="genre">'+esc(L.g[s.g])+'</span>'+(s.maul?'<span class="maulb">⚔</span>':'')+(s.ranked?'<span class="maulb">RANK</span>':'')+(s.custom?'<span class="maulb">'+(lang==='ja'?'らばーず譜面':'Lovers chart')+'</span>':'')+
     '<div class="title">'+esc(s.title)+(s.subTitle?' <small>'+esc(s.subTitle)+'</small>':'')+'</div>'+
     '<div class="who">♪ '+esc(s.artist)+'<br>✎ '+esc(s.mp)+'</div></div></div>'+
     '<div class="stats"><span>'+L.len+' <b>'+clock(s.length)+'</b></span><span>'+L.bpm+' <b>'+Math.round(s.bpm*10)/10+'</b></span></div>'+

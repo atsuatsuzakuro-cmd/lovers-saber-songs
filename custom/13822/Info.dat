@@ -1,0 +1,44 @@
+{
+ "_version": "2.0.0",
+ "_songName": "Telecaster B-Boy",
+ "_songSubName": "feat. Kagamine Len",
+ "_songAuthorName": "3",
+ "_levelAuthorName": "らばーず譜面",
+ "_beatsPerMinute": 182,
+ "_shuffle": 0,
+ "_shufflePeriod": 0.5,
+ "_previewStartTime": 39.65999984741211,
+ "_previewDuration": 20.934001922607422,
+ "_songFilename": "song.egg",
+ "_coverImageFilename": "cover.jpg",
+ "_environmentName": "DefaultEnvironment",
+ "_songTimeOffset": 0,
+ "_difficultyBeatmapSets": [
+  {
+   "_beatmapCharacteristicName": "Standard",
+   "_difficultyBeatmaps": [
+    {
+     "_difficulty": "Easy",
+     "_difficultyRank": 1,
+     "_beatmapFilename": "EasyStandard.dat",
+     "_noteJumpMovementSpeed": 10,
+     "_noteJumpStartBeatOffset": 0
+    },
+    {
+     "_difficulty": "Normal",
+     "_difficultyRank": 3,
+     "_beatmapFilename": "NormalStandard.dat",
+     "_noteJumpMovementSpeed": 10,
+     "_noteJumpStartBeatOffset": 0
+    },
+    {
+     "_difficulty": "Hard",
+     "_difficultyRank": 5,
+     "_beatmapFilename": "HardStandard.dat",
+     "_noteJumpMovementSpeed": 14,
+     "_noteJumpStartBeatOffset": 0.800000011920929
+    }
+   ]
+  }
+ ]
+}
