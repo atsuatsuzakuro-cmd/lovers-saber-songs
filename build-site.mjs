@@ -16,6 +16,7 @@
 // 同じ曲は、前回と同じスロットに置く(遊んでいる途中の人の曲が入れ替わらないように)。
 // 前回と同じ曲・同じ版は、前回のファイルを取り直して使い、新しい曲だけ BeatSaver から取ってきて変える
 import { listCustom, buildCustom } from './lib/custom.mjs';
+import { trimToFit } from './lib/trim.mjs';
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync, copyFileSync, unlinkSync, statfsSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -95,7 +96,8 @@ async function collectMaps() {
   // 特別な改造(Noodle Extensions・Mapping Extensions)がないと遊べない譜面と、壁だけの譜面も、ワールドではこわれるので入れない
   const needsMod = (m) => { const v = (m.versions ?? []).find((x) => x.state === 'Published') ?? m.versions?.[0]; const std = (v?.diffs ?? []).filter((d) => d.characteristic === 'Standard'); return std.length > 0 && std.every((d) => d.ne || d.me); };
   const wallOnly = (m) => /wall ?map/i.test(m.name ?? '');
-  const add = (m) => { if (m && !seen.has(m.id) && maps.length < cfg.maxSongs) { seen.add(m.id); if (isAi(m)) { aiSkipped++; log(`  自動で作った譜面なので入れません: ${m.name}(BeatSaver ${m.id})`); return; }
+  // prot: 守る曲(うどんセイバー・プレイリストなど)。入りきらなくても消さない(lib/trim.mjs)。守る曲は、数の上限でも止めない
+  const add = (m, prot = false) => { if (m && !seen.has(m.id) && (prot || maps.length < cfg.maxSongs)) { seen.add(m.id); m.protected = prot; if (isAi(m)) { aiSkipped++; log(`  自動で作った譜面なので入れません: ${m.name}(BeatSaver ${m.id})`); return; }
     if (needsMod(m) || wallOnly(m)) { modSkipped++; return; } maps.push(m); } };
   // いちばん先に入れる曲(うどんセイバーの曲など。BeatSaver の番号の一覧のファイル)。この曲は置き場に入りきらなくても減らさない
   for (const f of cfg.priorityIdFiles ?? []) {
@@ -103,7 +105,7 @@ async function collectMaps() {
     const ids = Array.isArray(j) ? j : [...(j.sure ?? []), ...(j.check ?? [])];
     for (let i = 0; i < ids.length; i += 50) {
       const r = await getJson(`https://api.beatsaver.com/maps/ids/${ids.slice(i, i + 50).join(',')}`);
-      for (const id of ids.slice(i, i + 50)) add(r[id]);
+      for (const id of ids.slice(i, i + 50)) add(r[id], true);
     }
     log(`${f}: いま ${maps.length} 曲`);
   }
@@ -111,7 +113,7 @@ async function collectMaps() {
     for (let page = 0; page < 100; page++) {
       const j = await getJson(`https://api.beatsaver.com/playlists/id/${id}/${page}`);
       const got = (j.maps ?? []).sort((x, y) => (x.order ?? 0) - (y.order ?? 0));
-      for (const x of got) add(x.map);
+      for (const x of got) add(x.map, true);
       if (!got.length) break;
     }
     log(`プレイリスト ${id}: いま ${maps.length} 曲`);
@@ -159,15 +161,20 @@ async function main() {
   // らばーず譜面(custom/<番号>/)。入りきらないときは、BeatSaver の曲(優先度の低い後ろのほう)を減らす
   const customRoot = join(import.meta.dirname, 'custom');
   const customIds = listCustom(customRoot);
-  if (customIds.length && maps.length + customIds.length > cfg.maxSongs) { maps.length = Math.max(0, cfg.maxSongs - customIds.length); log(`らばーず譜面 ${customIds.length} 曲のぶん、BeatSaver の曲を減らしました`); }
+  // 入りきらないときは、守る曲(うどんセイバー・らばーず譜面・頼まれた曲)は残し、ほかの曲を BeatSaver の評価の低いほうから減らす
+  const room = Math.min(cfg.maxSongs, Math.floor(((cfg.maxFiles ?? 19000) - 40) / 2)) - customIds.length;
+  const trimmed = trimToFit(maps, room);
+  if (trimmed.dropped.length) log(`入りきらないので、評価の低い曲を ${trimmed.dropped.length} 曲減らしました(守る曲は減らしていません)`);
+  if (trimmed.over) log(`注意: 守る曲だけで、置き場の数を ${trimmed.over} 曲こえています。ワールドの曲の数を増やしてください`);
+  maps.length = 0; maps.push(...trimmed.kept);
   log(`入れる曲: ${maps.length} 曲 + らばーず譜面 ${customIds.length} 曲`);
 
   // スロットを決める: 前回と同じ曲は同じスロット、新しい曲は空いているスロット(0 は同期テスト)
   const used = new Set([0]);
   const plan = [];
   for (const m of maps) { const p = prevById.get(m.id); if (p && !used.has(p.slot)) { used.add(p.slot); plan.push({ m, slot: p.slot, prev: p }); } else plan.push({ m, slot: -1 }); }
-  const prevCustom = new Map(prev.slots.filter((s) => s.songId?.startsWith('lovers:')).map((s) => [s.songId.slice(7), s.slot]));
-  const customPlan = customIds.map((id) => { const ps = prevCustom.get(id); if (ps !== undefined && !used.has(ps)) { used.add(ps); return { id, slot: ps }; } return { id, slot: -1 }; });
+  const prevCustom = new Map(prev.slots.filter((s) => s.songId?.startsWith('lovers:')).map((s) => [s.songId.slice(7), s]));
+  const customPlan = customIds.map((id) => { const pe = prevCustom.get(id); if (pe && !used.has(pe.slot)) { used.add(pe.slot); return { id, slot: pe.slot, prev: pe }; } return { id, slot: -1 }; });
   let next = 1;
   for (const p of plan) if (p.slot < 0) { while (used.has(next)) next++; p.slot = next; used.add(next); }
   for (const p of customPlan) if (p.slot < 0) { while (used.has(next)) next++; p.slot = next; used.add(next); }
@@ -254,12 +261,12 @@ async function main() {
     if ((reused + made) % 50 === 0) log(`  ${reused + made} 曲(使い回し ${reused} / 新しく ${made})・空き ${freeGB()}GB`);
   }
   // らばーず譜面(音は BeatSaver の ZIP から。取れない曲は、とばして記録する)
-  let customMade = 0;
+  let customMade = 0, customReused = 0;
   for (const p of customPlan) {
-    const entry = await buildCustom(p.id, { customRoot, out, slot: p.slot, abr: cfg.audioBitrate, genreFromTags, log });
-    if (entry) { slots.push(entry); customMade++; }
+    const entry = await buildCustom(p.id, { customRoot, out, slot: p.slot, abr: cfg.audioBitrate, genreFromTags, log, prev: p.prev, siteUrl: siteUrl.startsWith('http') ? siteUrl : null });
+    if (entry) { if (entry.reused) { delete entry.reused; customReused++; } slots.push(entry); customMade++; }
   }
-  if (customPlan.length) log(`らばーず譜面: ${customMade} / ${customPlan.length} 曲`);
+  if (customPlan.length) log(`らばーず譜面: ${customMade} / ${customPlan.length} 曲(前回のまま使った曲 ${customReused})`);
   slots.sort((x, y) => x.slot - y.slot);
   const total = (await getJson('https://api.beatsaver.com/search/text/0?pageSize=1')).info?.total ?? 0;
   const cat = { format: 'vrsaber-catalog', formatVersion: 1, source: 'beatsaver', total, slots };

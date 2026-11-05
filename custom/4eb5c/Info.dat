@@ -1,0 +1,49 @@
+{
+ "_version": "2.1.0",
+ "_songName": "Heart Jackin",
+ "_songSubName": "",
+ "_songAuthorName": "Yu Asahina",
+ "_levelAuthorName": "らばーず譜面",
+ "_beatsPerMinute": 160,
+ "_songTimeOffset": 0,
+ "_shuffle": 0,
+ "_shufflePeriod": 0,
+ "_previewStartTime": 7,
+ "_previewDuration": 20,
+ "_songFilename": "song.egg",
+ "_coverImageFilename": "cover.png",
+ "_environmentName": "BigMirrorEnvironment",
+ "_allDirectionsEnvironmentName": "GlassDesertEnvironment",
+ "_environmentNames": [
+  "BigMirrorEnvironment"
+ ],
+ "_colorSchemes": [],
+ "_difficultyBeatmapSets": [
+  {
+   "_beatmapCharacteristicName": "Standard",
+   "_difficultyBeatmaps": [
+    {
+     "_difficulty": "Easy",
+     "_difficultyRank": 1,
+     "_beatmapFilename": "EasyStandard.dat",
+     "_noteJumpMovementSpeed": 10,
+     "_noteJumpStartBeatOffset": -2
+    },
+    {
+     "_difficulty": "Normal",
+     "_difficultyRank": 3,
+     "_beatmapFilename": "NormalStandard.dat",
+     "_noteJumpMovementSpeed": 15,
+     "_noteJumpStartBeatOffset": -0.222
+    },
+    {
+     "_difficulty": "Hard",
+     "_difficultyRank": 5,
+     "_beatmapFilename": "HardStandard.dat",
+     "_noteJumpMovementSpeed": 16,
+     "_noteJumpStartBeatOffset": -0.333
+    }
+   ]
+  }
+ ]
+}

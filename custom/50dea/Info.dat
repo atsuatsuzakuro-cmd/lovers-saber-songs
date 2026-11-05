@@ -1,0 +1,49 @@
+{
+ "_version": "2.1.0",
+ "_songName": "めくるめくランデヴー",
+ "_songSubName": "",
+ "_songAuthorName": "FUWAMOCO",
+ "_levelAuthorName": "らばーず譜面",
+ "_beatsPerMinute": 112.75,
+ "_songTimeOffset": 0,
+ "_shuffle": 0,
+ "_shufflePeriod": 0,
+ "_previewStartTime": 59,
+ "_previewDuration": 27,
+ "_songFilename": "Mekurumeku Rendezvous.egg",
+ "_coverImageFilename": "Mekurumeku Rendezvous.jpg",
+ "_environmentName": "BigMirrorEnvironment",
+ "_allDirectionsEnvironmentName": "GlassDesertEnvironment",
+ "_environmentNames": [
+  "BigMirrorEnvironment"
+ ],
+ "_colorSchemes": [],
+ "_difficultyBeatmapSets": [
+  {
+   "_beatmapCharacteristicName": "Standard",
+   "_difficultyBeatmaps": [
+    {
+     "_difficulty": "Easy",
+     "_difficultyRank": 1,
+     "_beatmapFilename": "EasyStandard.dat",
+     "_noteJumpMovementSpeed": 10,
+     "_noteJumpStartBeatOffset": 0
+    },
+    {
+     "_difficulty": "Normal",
+     "_difficultyRank": 3,
+     "_beatmapFilename": "NormalStandard.dat",
+     "_noteJumpMovementSpeed": 10,
+     "_noteJumpStartBeatOffset": 0
+    },
+    {
+     "_difficulty": "Hard",
+     "_difficultyRank": 5,
+     "_beatmapFilename": "HardStandard.dat",
+     "_noteJumpMovementSpeed": 16,
+     "_noteJumpStartBeatOffset": -0.767
+    }
+   ]
+  }
+ ]
+}

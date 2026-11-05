@@ -1,0 +1,91 @@
+{
+ "_version": "2.1.0",
+ "_songName": "Remember",
+ "_songSubName": "月見ヤチヨ",
+ "_songAuthorName": "yuigot",
+ "_levelAuthorName": "らばーず譜面",
+ "_beatsPerMinute": 168,
+ "_songTimeOffset": 0,
+ "_shuffle": 0,
+ "_shufflePeriod": 0.5,
+ "_previewStartTime": 136,
+ "_previewDuration": 10,
+ "_songFilename": "song.egg",
+ "_coverImageFilename": "cover.png",
+ "_environmentName": "ColliderEnvironment",
+ "_allDirectionsEnvironmentName": "GlassDesertEnvironment",
+ "_environmentNames": [
+  "ColliderEnvironment"
+ ],
+ "_colorSchemes": [
+  {
+   "useOverride": true,
+   "colorScheme": {
+    "colorSchemeId": "New Color Scheme",
+    "saberAColor": {
+     "r": 0.965,
+     "g": 0.494,
+     "b": 0.149
+    },
+    "saberBColor": {
+     "r": 0.169,
+     "g": 0.6,
+     "b": 0.859
+    },
+    "environmentColor0": {
+     "r": 1,
+     "g": 0.369,
+     "b": 0.823
+    },
+    "environmentColor1": {
+     "r": 0.282,
+     "g": 0.784,
+     "b": 1
+    },
+    "obstaclesColor": {
+     "r": 0.839,
+     "g": 0.098,
+     "b": 0
+    },
+    "environmentColor0Boost": {
+     "r": 0.898,
+     "g": 0.035,
+     "b": 0.023
+    },
+    "environmentColor1Boost": {
+     "r": 0.855,
+     "g": 0.412,
+     "b": 0.973
+    }
+   }
+  }
+ ],
+ "_difficultyBeatmapSets": [
+  {
+   "_beatmapCharacteristicName": "Standard",
+   "_difficultyBeatmaps": [
+    {
+     "_difficulty": "Easy",
+     "_difficultyRank": 1,
+     "_beatmapFilename": "EasyStandard.dat",
+     "_noteJumpMovementSpeed": 10,
+     "_noteJumpStartBeatOffset": 0
+    },
+    {
+     "_difficulty": "Normal",
+     "_difficultyRank": 3,
+     "_beatmapFilename": "NormalStandard.dat",
+     "_noteJumpMovementSpeed": 10,
+     "_noteJumpStartBeatOffset": 0
+    },
+    {
+     "_difficulty": "Hard",
+     "_difficultyRank": 5,
+     "_beatmapFilename": "HardStandard.dat",
+     "_noteJumpMovementSpeed": 14,
+     "_noteJumpStartBeatOffset": 1
+    }
+   ]
+  }
+ ]
+}

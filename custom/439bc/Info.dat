@@ -1,0 +1,96 @@
+{
+ "_version": "2.1.0",
+ "_songName": "Primary Star",
+ "_songSubName": " (feat. Hatsune Miku)",
+ "_songAuthorName": "Reno",
+ "_levelAuthorName": "らばーず譜面",
+ "_beatsPerMinute": 138,
+ "_songTimeOffset": 0,
+ "_shuffle": 0,
+ "_shufflePeriod": 0.5,
+ "_previewStartTime": 73.5,
+ "_previewDuration": 10,
+ "_songFilename": "song.egg",
+ "_coverImageFilename": "cover.jpg",
+ "_environmentName": "EDMEnvironment",
+ "_allDirectionsEnvironmentName": "GlassDesertEnvironment",
+ "_environmentNames": [],
+ "_colorSchemes": [
+  {
+   "useOverride": true,
+   "colorScheme": {
+    "colorSchemeId": "",
+    "saberAColor": {
+     "r": 0.6320754,
+     "g": 0.6320754,
+     "b": 0.6320754,
+     "a": 1
+    },
+    "saberBColor": {
+     "r": 0.1764706,
+     "g": 0.69803923,
+     "b": 0.87843144,
+     "a": 1
+    },
+    "environmentColor0": {
+     "r": 0.74375,
+     "g": 0.6713,
+     "b": 0.13015625,
+     "a": 1
+    },
+    "environmentColor1": {
+     "r": 0.14509802,
+     "g": 0.6031557,
+     "b": 0.7921569,
+     "a": 1
+    },
+    "obstaclesColor": {
+     "r": 0.1764706,
+     "g": 0.69803923,
+     "b": 0.87843144,
+     "a": 1
+    },
+    "environmentColor0Boost": {
+     "r": 0.735849,
+     "g": 0,
+     "b": 0.17586324,
+     "a": 1
+    },
+    "environmentColor1Boost": {
+     "r": 0.42845926,
+     "g": 0,
+     "b": 0.754717,
+     "a": 1
+    }
+   }
+  }
+ ],
+ "_difficultyBeatmapSets": [
+  {
+   "_beatmapCharacteristicName": "Standard",
+   "_difficultyBeatmaps": [
+    {
+     "_difficulty": "Easy",
+     "_difficultyRank": 1,
+     "_beatmapFilename": "EasyStandard.dat",
+     "_noteJumpMovementSpeed": 13,
+     "_noteJumpStartBeatOffset": -0.05400000140070915
+    },
+    {
+     "_difficulty": "Normal",
+     "_difficultyRank": 3,
+     "_beatmapFilename": "NormalStandard.dat",
+     "_noteJumpMovementSpeed": 14,
+     "_noteJumpStartBeatOffset": -0.3569999933242798
+    },
+    {
+     "_difficulty": "Hard",
+     "_difficultyRank": 5,
+     "_beatmapFilename": "HardStandard.dat",
+     "_noteJumpMovementSpeed": 15,
+     "_noteJumpStartBeatOffset": -0.5429999828338623
+    }
+   ]
+  }
+ ]
+}

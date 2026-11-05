@@ -1,0 +1,47 @@
+{
+ "_version": "2.1.0",
+ "_songName": "NARUKAMI",
+ "_songSubName": "",
+ "_songAuthorName": "laur",
+ "_levelAuthorName": "らばーず譜面",
+ "_beatsPerMinute": 200,
+ "_songTimeOffset": 0,
+ "_shuffle": 0,
+ "_shufflePeriod": 0.5,
+ "_previewStartTime": 144.22,
+ "_previewDuration": 35,
+ "_songFilename": "narukami.egg",
+ "_coverImageFilename": "98052c4b-172b-408d-a1e3-377f35bc7425.jpg",
+ "_environmentName": "DefaultEnvironment",
+ "_allDirectionsEnvironmentName": "GlassDesertEnvironment",
+ "_environmentNames": [],
+ "_colorSchemes": [],
+ "_difficultyBeatmapSets": [
+  {
+   "_beatmapCharacteristicName": "Standard",
+   "_difficultyBeatmaps": [
+    {
+     "_difficulty": "Easy",
+     "_difficultyRank": 1,
+     "_beatmapFilename": "EasyStandard.dat",
+     "_noteJumpMovementSpeed": 10,
+     "_noteJumpStartBeatOffset": 0
+    },
+    {
+     "_difficulty": "Normal",
+     "_difficultyRank": 3,
+     "_beatmapFilename": "NormalStandard.dat",
+     "_noteJumpMovementSpeed": 10,
+     "_noteJumpStartBeatOffset": 0
+    },
+    {
+     "_difficulty": "Hard",
+     "_difficultyRank": 5,
+     "_beatmapFilename": "HardStandard.dat",
+     "_noteJumpMovementSpeed": 12,
+     "_noteJumpStartBeatOffset": 0
+    }
+   ]
+  }
+ ]
+}

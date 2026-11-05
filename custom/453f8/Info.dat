@@ -1,0 +1,47 @@
+{
+ "_version": "2.1.0",
+ "_songName": "GOODRAGE",
+ "_songSubName": "",
+ "_songAuthorName": "EBIMAYO、KEIGO KOBUCHI",
+ "_levelAuthorName": "らばーず譜面",
+ "_beatsPerMinute": 222,
+ "_songTimeOffset": 0,
+ "_shuffle": 0,
+ "_shufflePeriod": 0.5,
+ "_previewStartTime": 92.8,
+ "_previewDuration": 30,
+ "_songFilename": "song.egg",
+ "_coverImageFilename": "cover_2.png",
+ "_environmentName": "BTSEnvironment",
+ "_allDirectionsEnvironmentName": "GlassDesertEnvironment",
+ "_environmentNames": [],
+ "_colorSchemes": [],
+ "_difficultyBeatmapSets": [
+  {
+   "_beatmapCharacteristicName": "Standard",
+   "_difficultyBeatmaps": [
+    {
+     "_difficulty": "Easy",
+     "_difficultyRank": 1,
+     "_beatmapFilename": "EasyStandard.dat",
+     "_noteJumpMovementSpeed": 16,
+     "_noteJumpStartBeatOffset": -2
+    },
+    {
+     "_difficulty": "Normal",
+     "_difficultyRank": 3,
+     "_beatmapFilename": "NormalStandard.dat",
+     "_noteJumpMovementSpeed": 17,
+     "_noteJumpStartBeatOffset": 0
+    },
+    {
+     "_difficulty": "Hard",
+     "_difficultyRank": 5,
+     "_beatmapFilename": "HardStandard.dat",
+     "_noteJumpMovementSpeed": 17,
+     "_noteJumpStartBeatOffset": -0.076
+    }
+   ]
+  }
+ ]
+}
