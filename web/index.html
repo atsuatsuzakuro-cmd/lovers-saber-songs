@@ -140,6 +140,7 @@ footer p{margin:6px 0}
       <select id="sort" aria-label="並べ方"></select>
       <button class="btn" id="dir" type="button" aria-label="順番">↑</button>
       <label class="chk" id="rankWrap"><input type="checkbox" id="rank"><span data-t="rankOnly">ランク入りだけ</span></label>
+      <label class="chk" id="customWrap"><input type="checkbox" id="custom"><span data-t="customOnly">らばーず譜面だけ</span></label>
       <label class="chk" id="maulWrap"><input type="checkbox" id="maul"><span data-t="maulOnly">ダブルセイバーだけ</span></label>
       <label class="chk"><input type="checkbox" id="covers"><span data-t="showCovers">ジャケットを出す</span></label>
     </div>
@@ -179,7 +180,7 @@ drawSky();var rt;addEventListener('resize',function(){clearTimeout(rt);rt=setTim
 // ---- ことば(日本語 / English) ----
 var T={
  ja:{sub:'曲さがし',guideLink:'遊び方ガイド →',loading:'曲の一覧を読み込んでいます…',ph:'曲名・アーティスト・譜面の作者・番号',
-  all:'ジャンル: すべて',allDiff:'難易度: ぜんぶ',maulOnly:'ダブルセイバーだけ',rankOnly:'ランク入りだけ',showCovers:'ジャケットを出す',
+  all:'ジャンル: すべて',allDiff:'難易度: ぜんぶ',maulOnly:'ダブルセイバーだけ',rankOnly:'ランク入りだけ',customOnly:'らばーず譜面だけ',showCovers:'ジャケットを出す',
   sNo:'番号順',sTitle:'曲名順',sBpm:'BPM 順',sLen:'長さ順',sNotes:'ノーツ数順',
   count:function(n,t){return n===t?t+' 曲':n+' 曲 / 全 '+t+' 曲';},none:'見つかりませんでした。ことばを短くしてみてね。',
   err:'曲の一覧を読み込めませんでした。少し待って、ページを読み直してね。',
@@ -192,7 +193,7 @@ var T={
   credit1:null,credit2:null,howTitle:null,howBody:null,
   g:{vocaloid:'ボカロ',anime:'アニメ',jpop:'J-POP',game:'ゲーム',western:'洋楽',other:'その他'},allG:'すべて'},
  en:{sub:'Song Finder',guideLink:'How to play →',loading:'Loading the song list…',ph:'Title, artist, mapper or number',
-  all:'Genre: All',allDiff:'Difficulty: Any',maulOnly:'Double saber only',rankOnly:'Ranked only',showCovers:'Show covers',
+  all:'Genre: All',allDiff:'Difficulty: Any',maulOnly:'Double saber only',rankOnly:'Ranked only',customOnly:'Lovers charts only',showCovers:'Show covers',
   sNo:'Number',sTitle:'Title',sBpm:'BPM',sLen:'Length',sNotes:'Notes',
   count:function(n,t){return n===t?t+' songs':n+' of '+t+' songs';},none:'No songs found. Try a shorter word.',
   err:'Could not load the song list. Please wait a bit and reload.',
@@ -219,7 +220,7 @@ var JA_HTML={};
 function t(k){return T[lang][k];}
 var $=function(id){return document.getElementById(id);};
 
-var all=[],view=[],page=0,dirAsc=true,cnt={all:0,maul:0,rank:0},gcnt={};
+var all=[],view=[],page=0,dirAsc=true,cnt={all:0,maul:0,rank:0,custom:0},gcnt={};
 var cur=null; // 試聴中のスロット
 
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
@@ -281,6 +282,7 @@ function prepare(cat){
     gcnt[g]=(gcnt[g]||0)+1;
     if(s.maul){s.mi=mi++;}
     if(s.ranked){s.ri=cnt.rank++;}
+    if(s.custom)cnt.custom++;
     s.dl=(s.diffs&&s.diffs.length?s.diffs:[{difficulty:s.difficulty,noteCount:s.noteCount}]).slice().sort(function(a,b){return DIFFS.indexOf(a.difficulty)-DIFFS.indexOf(b.difficulty);});
     s.ds={};s.dl.forEach(function(d){s.ds[d.difficulty]=1;});
     s.mx=s.dl.reduce(function(m,d){return Math.max(m,d.noteCount||0);},0);
@@ -292,6 +294,7 @@ function prepare(cat){
   all=slots;
   if(!mi)$('maulWrap').hidden=true;
   if(!cnt.rank)$('rankWrap').hidden=true;
+  if(!cnt.custom)$('customWrap').hidden=true;
   $('state').hidden=true;
   fillSelects();
   update();
@@ -299,11 +302,11 @@ function prepare(cat){
 
 // ---- さがす・しぼる・並べる ----
 function update(){
-  var q=norm($('q').value).trim(),toks=q?q.split(' '):[],g=$('genre').value,d=$('diff').value,m=$('maul').checked,rk=$('rank').checked;
+  var q=norm($('q').value).trim(),toks=q?q.split(' '):[],g=$('genre').value,d=$('diff').value,m=$('maul').checked,rk=$('rank').checked,cu=$('custom').checked;
   var num=/^\d+$/.test(q)?+q:-1;
   var res=[];
   for(var i=0;i<all.length;i++){var s=all[i];
-    if(g&&s.g!==g)continue;if(d&&!s.ds[d])continue;if(m&&!s.maul)continue;if(rk&&!s.ranked)continue;
+    if(g&&s.g!==g)continue;if(d&&!s.ds[d])continue;if(m&&!s.maul)continue;if(rk&&!s.ranked)continue;if(cu&&!s.custom)continue;
     if(toks.length&&s.no!==num){var ok=true;for(var k=0;k<toks.length;k++)if(s.key.indexOf(toks[k])<0){ok=false;break;}if(!ok)continue;}
     res.push(s);}
   var so=$('sort').value,sg=dirAsc?1:-1;
@@ -374,7 +377,7 @@ au.addEventListener('ended',function(){cur=null;render();});
 
 // ---- 操作 ----
 var tm;$('q').addEventListener('input',function(){clearTimeout(tm);tm=setTimeout(update,220);});
-['genre','diff','sort','maul','rank'].forEach(function(id){$(id).addEventListener('change',update);});
+['genre','diff','sort','maul','rank','custom'].forEach(function(id){$(id).addEventListener('change',update);});
 $('dir').onclick=function(){dirAsc=!dirAsc;this.textContent=dirAsc?'↑':'↓';update();};
 $('covers').addEventListener('change',function(){try{localStorage.setItem('ls-covers',this.checked?'1':'0');}catch(e){}render();});
 try{if(localStorage.getItem('ls-covers')==='1')$('covers').checked=true;}catch(e){}

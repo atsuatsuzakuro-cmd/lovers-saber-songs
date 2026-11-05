@@ -1,0 +1,47 @@
+{
+ "_version": "2.1.0",
+ "_songName": "Star Anthem 2005",
+ "_songSubName": "",
+ "_songAuthorName": "Stessie & VOLANT",
+ "_levelAuthorName": "らばーず譜面",
+ "_beatsPerMinute": 150,
+ "_songTimeOffset": 0,
+ "_shuffle": 0,
+ "_shufflePeriod": 0.5,
+ "_previewStartTime": 118.35,
+ "_previewDuration": 20,
+ "_songFilename": "song.egg",
+ "_coverImageFilename": "star0.png",
+ "_environmentName": "DefaultEnvironment",
+ "_allDirectionsEnvironmentName": "GlassDesertEnvironment",
+ "_environmentNames": [],
+ "_colorSchemes": [],
+ "_difficultyBeatmapSets": [
+  {
+   "_beatmapCharacteristicName": "Standard",
+   "_difficultyBeatmaps": [
+    {
+     "_difficulty": "Easy",
+     "_difficultyRank": 1,
+     "_beatmapFilename": "EasyStandard.dat",
+     "_noteJumpMovementSpeed": 10,
+     "_noteJumpStartBeatOffset": 0
+    },
+    {
+     "_difficulty": "Normal",
+     "_difficultyRank": 3,
+     "_beatmapFilename": "NormalStandard.dat",
+     "_noteJumpMovementSpeed": 10,
+     "_noteJumpStartBeatOffset": 0
+    },
+    {
+     "_difficulty": "Hard",
+     "_difficultyRank": 5,
+     "_beatmapFilename": "HardStandard.dat",
+     "_noteJumpMovementSpeed": 12,
+     "_noteJumpStartBeatOffset": 0
+    }
+   ]
+  }
+ ]
+}
