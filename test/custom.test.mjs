@@ -88,3 +88,30 @@ test('ダブルセイバーの maul.json から、一覧の "maul"(選べる難�
     diffs: [{ difficulty: 'Easy', noteCount: 30, chartKey: 'k-e' }, { difficulty: 'Normal', noteCount: 60, chartKey: 'k-n' }, { difficulty: 'Hard', noteCount: 90, chartKey: 'k-h' }],
   });
 });
+
+test('BeatSaver から取れなくても、前回置いた曲があれば、それをそのまま使う(消さない)', async () => {
+  const { basename, dirname } = await import('node:path');
+  const { mkdtempSync, readFileSync } = await import('node:fs');
+  const d = customDir();
+  const out = mkdtempSync(join(tmpdir(), 'out-'));
+  const prev = { slot: 9, title: 'T', songId: 'lovers:' + basename(d), customKey: 'old-key', custom: true, mappers: ['らばーず譜面'] };
+  const fetchStub = async (url) => {
+    if (url.includes('pages.dev/slots/009/')) return { ok: true, arrayBuffer: async () => new TextEncoder().encode(url.endsWith('chart.json') ? '{"old":1}' : 'OLD').buffer };
+    throw new Error('terminated');
+  };
+  const logs = [];
+  const r = await buildCustom(basename(d), { customRoot: dirname(d), out, slot: 9, prev, siteUrl: 'https://lovers-saber.pages.dev/', fetch: fetchStub, log: s => logs.push(s), retryWait: 0 });
+  assert.ok(r, logs.join('\n'));
+  assert.equal(r.songId, prev.songId);
+  assert.equal(readFileSync(join(out, 'slots', '009', 'audio.mp4'), 'utf8'), 'OLD');
+  assert.ok(logs.some(s => s.includes('前回')), logs.join('\n'));
+});
+
+test('BeatSaver からの取得は、失敗しても 3 回までやり直す', async () => {
+  const { basename, dirname } = await import('node:path');
+  const d = customDir();
+  let calls = 0;
+  const fetchStub = async (url) => { if (url.includes('/maps/id/')) { calls++; throw new Error('terminated'); } throw new Error('x'); };
+  await buildCustom(basename(d), { customRoot: dirname(d), out: tmpdir(), slot: 5, fetch: fetchStub, log: () => {}, retryWait: 0 });
+  assert.equal(calls, 3);
+});

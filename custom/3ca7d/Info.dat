@@ -1,0 +1,82 @@
+{
+ "_version": "2.1.0",
+ "_songName": "Envy Cat Walk",
+ "_songSubName": "feat. Hatsune Miku",
+ "_songAuthorName": "Tohma",
+ "_levelAuthorName": "らばーず譜面",
+ "_beatsPerMinute": 160,
+ "_songTimeOffset": 0,
+ "_shuffle": 0,
+ "_shufflePeriod": 0.5,
+ "_previewStartTime": 86.4,
+ "_previewDuration": 10,
+ "_songFilename": "Envy Cat Walk.egg",
+ "_coverImageFilename": "artworks-000033546957-kn9558-t500x500.jpg",
+ "_environmentName": "BigMirrorEnvironment",
+ "_allDirectionsEnvironmentName": "GlassDesertEnvironment",
+ "_environmentNames": [],
+ "_colorSchemes": [],
+ "_difficultyBeatmapSets": [
+  {
+   "_beatmapCharacteristicName": "Standard",
+   "_difficultyBeatmaps": [
+    {
+     "_difficulty": "Easy",
+     "_difficultyRank": 1,
+     "_beatmapFilename": "EasyStandard.dat",
+     "_noteJumpMovementSpeed": 10,
+     "_noteJumpStartBeatOffset": 0
+    },
+    {
+     "_difficulty": "Normal",
+     "_difficultyRank": 3,
+     "_beatmapFilename": "NormalStandard.dat",
+     "_noteJumpMovementSpeed": 15,
+     "_noteJumpStartBeatOffset": -0.23
+    },
+    {
+     "_difficulty": "Hard",
+     "_difficultyRank": 5,
+     "_beatmapFilename": "HardStandard.dat",
+     "_noteJumpMovementSpeed": 17,
+     "_noteJumpStartBeatOffset": -0.4
+    }
+   ]
+  },
+  {
+   "_beatmapCharacteristicName": "Lawless",
+   "_difficultyBeatmaps": [
+    {
+     "_difficulty": "Easy",
+     "_difficultyRank": 1,
+     "_beatmapFilename": "EasyLawless.dat",
+     "_noteJumpMovementSpeed": 10,
+     "_noteJumpStartBeatOffset": 0,
+     "_customData": {
+      "_difficultyLabel": "Double Saber"
+     }
+    },
+    {
+     "_difficulty": "Normal",
+     "_difficultyRank": 3,
+     "_beatmapFilename": "NormalLawless.dat",
+     "_noteJumpMovementSpeed": 10,
+     "_noteJumpStartBeatOffset": 0,
+     "_customData": {
+      "_difficultyLabel": "Double Saber"
+     }
+    },
+    {
+     "_difficulty": "Hard",
+     "_difficultyRank": 5,
+     "_beatmapFilename": "HardLawless.dat",
+     "_noteJumpMovementSpeed": 12,
+     "_noteJumpStartBeatOffset": 0,
+     "_customData": {
+      "_difficultyLabel": "Double Saber"
+     }
+    }
+   ]
+  }
+ ]
+}
